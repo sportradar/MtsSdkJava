@@ -4,10 +4,12 @@
 
 package com.sportradar.mts.sdk.api;
 
+import java.io.Serializable;
+
 /**
  * Represents rejection information
  */
-public interface RejectionInfo {
+public interface RejectionInfo extends Serializable {
     /**
      * Returns the rejected selection's related Selection id
      * @return the rejected selection's related Selection id

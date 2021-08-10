@@ -4,6 +4,8 @@
 
 package com.sportradar.mts.sdk.api.impl;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Preconditions;
 import com.sportradar.mts.sdk.api.BetDetail;
 import com.sportradar.mts.sdk.api.BetReoffer;
@@ -23,11 +25,12 @@ public class BetDetailImpl implements BetDetail {
     private final BetReoffer betReoffer;
     private final long altStake;
 
-    public BetDetailImpl(String betId,
-                         ResponseReason responseReason,
-                         List<SelectionDetail> selectionDetails,
-                         BetReoffer betReoffer,
-                         long alternativeStake)
+    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+    public BetDetailImpl(@JsonProperty("betId") String betId,
+                         @JsonProperty("reason") ResponseReason responseReason,
+                         @JsonProperty("selectionDetails") List<SelectionDetail> selectionDetails,
+                         @JsonProperty("betReoffer") BetReoffer betReoffer,
+                         @JsonProperty("alternativeStake") long alternativeStake)
     {
         Preconditions.checkArgument(betId.length() > 0, "betId is missing");
         Preconditions.checkArgument(betId.length() <= 128, "betId is too long");

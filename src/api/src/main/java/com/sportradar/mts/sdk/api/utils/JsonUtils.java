@@ -63,6 +63,10 @@ public class JsonUtils {
         resolver.addMapping(TicketNonSrSettleResponse.class, TicketNonSrSettleResponseImpl.class);
         resolver.addMapping(TicketReofferCancel.class, TicketReofferCancelImpl.class);
         resolver.addMapping(TicketResponse.class, TicketResponseImpl.class);
+        resolver.addMapping(BetDetail.class, BetDetailImpl.class);
+        resolver.addMapping(SelectionDetail.class, SelectionDetailsImpl.class);
+        resolver.addMapping(BetReoffer.class, BetReofferImpl.class);
+        resolver.addMapping(RejectionInfo.class, RejectionInfoImpl.class);
         module.setAbstractTypes(resolver);
         OBJECT_MAPPER.registerModule(module);
     }

@@ -4,6 +4,8 @@
 
 package com.sportradar.mts.sdk.api.impl;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Preconditions;
 import com.sportradar.mts.sdk.api.RejectionInfo;
 import com.sportradar.mts.sdk.api.ResponseReason;
@@ -18,7 +20,11 @@ public class SelectionDetailsImpl implements SelectionDetail {
     private final ResponseReason reason;
     private final RejectionInfo rejectionInfo;
 
-    public SelectionDetailsImpl(int index, ResponseReason reason, RejectionInfo rejectionInfo)
+    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+    public SelectionDetailsImpl(
+            @JsonProperty("index") int index,
+            @JsonProperty("reason") ResponseReason reason,
+            @JsonProperty("rejectionInfo") RejectionInfo rejectionInfo)
     {
         Preconditions.checkArgument(index >= 0 && index <= 62, "index is not valid");
         Preconditions.checkNotNull(reason, "reason cannot be null");

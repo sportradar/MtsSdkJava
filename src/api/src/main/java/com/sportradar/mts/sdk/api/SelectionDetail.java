@@ -4,10 +4,12 @@
 
 package com.sportradar.mts.sdk.api;
 
+import java.io.Serializable;
+
 /**
  * Defines a contract for per-selection rejection reasons
  */
-public interface SelectionDetail {
+public interface SelectionDetail extends Serializable {
 
     /**
      * Gets the index of the selection

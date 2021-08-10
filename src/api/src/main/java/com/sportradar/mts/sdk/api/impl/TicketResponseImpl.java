@@ -39,12 +39,13 @@ public class TicketResponseImpl implements TicketResponse {
     private final Map<String, String> additionalInfo;
     private final List<AutoAcceptedOdds> autoAcceptedOddsList;
     private final String msgBody;
+    private final List<BetDetail> sdkBetDetails;
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
     public TicketResponseImpl(@JsonProperty("ticketId") String ticketId,
                               @JsonProperty("reason") ResponseReason reason,
                               @JsonProperty("status") TicketAcceptance status,
-                              @JsonProperty("betDetails") List<BetDetail> betDetails,
+                              @JsonProperty("sdkBetDetails") List<BetDetail> betDetails,
                               @JsonProperty("signature") String signature,
                               @JsonProperty("exchangeRate") long exchangeRate,
                               @JsonProperty("timestampUtc") Date timestampUtc,
@@ -69,6 +70,7 @@ public class TicketResponseImpl implements TicketResponse {
         this.exchangeRate = exchangeRate;
         this.timestampUtc = timestampUtc;
         this.version = version;
+        this.sdkBetDetails = betDetails;
 
         if(betDetails != null && !betDetails.isEmpty())
         {
@@ -135,6 +137,10 @@ public class TicketResponseImpl implements TicketResponse {
     @Override
     public List<com.sportradar.mts.sdk.api.BetDetail> getBetDetails() {
         return betDetails;
+    }
+
+    public List<BetDetail> getSdkBetDetails() {
+        return sdkBetDetails;
     }
 
     @Override

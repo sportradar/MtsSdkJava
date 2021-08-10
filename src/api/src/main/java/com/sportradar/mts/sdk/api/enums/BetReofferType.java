@@ -4,10 +4,12 @@
 
 package com.sportradar.mts.sdk.api.enums;
 
+import java.io.Serializable;
+
 /**
  * Defines possible values for BetReofferType
  */
-public enum BetReofferType {
+public enum BetReofferType implements Serializable {
 
     /**
      * Auto

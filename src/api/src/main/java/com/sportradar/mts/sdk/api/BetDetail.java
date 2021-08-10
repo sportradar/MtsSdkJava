@@ -4,12 +4,13 @@
 
 package com.sportradar.mts.sdk.api;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Defines a contract for bet-level response details
  */
-public interface BetDetail {
+public interface BetDetail extends Serializable {
 
     /**
      * Gets the id of the bet

@@ -4,10 +4,12 @@
 
 package com.sportradar.mts.sdk.api;
 
+import java.io.Serializable;
+
 /**
  * Defines a contract for ticket cancellation response
  */
-public interface ResponseReason {
+public interface ResponseReason extends Serializable {
 
     /**
      * Gets the reason code

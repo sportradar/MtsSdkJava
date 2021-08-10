@@ -6,11 +6,13 @@ package com.sportradar.mts.sdk.api;
 
 import com.sportradar.mts.sdk.api.enums.BetReofferType;
 
+import java.io.Serializable;
+
 /**
  * Defines a contract for bet reoffer details, mutually exclusive with AlternativeStake
  *
  */
-public interface BetReoffer {
+public interface BetReoffer extends Serializable {
 
     /**
      * Gets the stake

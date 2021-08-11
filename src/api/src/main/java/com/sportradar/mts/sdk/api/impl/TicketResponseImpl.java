@@ -52,7 +52,7 @@ public class TicketResponseImpl implements TicketResponse {
                               @JsonProperty("version") String version,
                               @JsonProperty("correlationId") String correlationId,
                               @JsonProperty("additionalInfo") Map<String, String> additionalInfo,
-                              @JsonProperty("autoAcceptedOddsList") List<AutoAcceptedOdd> autoAcceptedOdds,
+                              @JsonProperty("autoAcceptedOdds") List<AutoAcceptedOdd> autoAcceptedOdds,
                               @JsonProperty("msgBody") String msgBody)
     {
         Preconditions.checkNotNull(ticketId, "ticketId cannot be null");

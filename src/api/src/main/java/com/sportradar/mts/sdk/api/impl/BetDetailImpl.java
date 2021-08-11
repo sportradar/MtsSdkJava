@@ -29,7 +29,7 @@ public class BetDetailImpl implements BetDetail {
     public BetDetailImpl(@JsonProperty("betId") String betId,
                          @JsonProperty("reason") ResponseReason responseReason,
                          @JsonProperty("selectionDetails") List<SelectionDetail> selectionDetails,
-                         @JsonProperty("betReoffer") BetReoffer betReoffer,
+                         @JsonProperty("reoffer") BetReoffer betReoffer,
                          @JsonProperty("alternativeStake") long alternativeStake)
     {
         Preconditions.checkArgument(betId.length() > 0, "betId is missing");

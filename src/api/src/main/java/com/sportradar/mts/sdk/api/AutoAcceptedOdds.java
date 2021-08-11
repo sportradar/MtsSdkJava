@@ -5,7 +5,9 @@
 package com.sportradar.mts.sdk.api;
 
 
-public interface AutoAcceptedOdds {
+import java.io.Serializable;
+
+public interface AutoAcceptedOdds extends Serializable {
     /**
      * Selection index from 'ticket.selections' array (zero based)
      *

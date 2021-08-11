@@ -22,7 +22,7 @@ public class SelectionDetailsImpl implements SelectionDetail {
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
     public SelectionDetailsImpl(
-            @JsonProperty("index") int index,
+            @JsonProperty("selectionIndex") int index,
             @JsonProperty("reason") ResponseReason reason,
             @JsonProperty("rejectionInfo") RejectionInfo rejectionInfo)
     {

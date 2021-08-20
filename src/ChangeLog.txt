@@ -2,7 +2,6 @@ A MTS SDK Java library
 
 CHANGE LOG:
 2021-06-27 2.3.6.2
-Fixed dto Ticket json schema
 Made betDetail serializable
 
 CHANGE LOG:

@@ -200,7 +200,7 @@ public abstract class RabbitMqBase implements Openable {
                                  exc);
                 } catch (ShutdownSignalException exc) {
                     this.sleepMillis = getSleepMillis(true, this.sleepMillis);
-                    logger.error("Unexpected connection exception while doing background work; sleepMillis={}",
+                    logger.warn("Unexpected connection exception while doing background work; sleepMillis={}",
                                  this.sleepMillis,
                                  exc);
                 } catch (Exception e) {

@@ -24,6 +24,7 @@ import com.sportradar.mts.sdk.impl.libs.receivers.TicketResponseWrapper;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,7 +36,6 @@ import java.util.concurrent.Semaphore;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 /**
@@ -270,7 +270,7 @@ public class TicketHandlerImplTest extends TimeLimitedTestBase {
         }).when(publisher).publishAsync(ticket.getTicketId(), msg, correlationId, routingKey, routingKey);
 
         Semaphore semaphore = new Semaphore(0);
-        when(executor.submit(any(Runnable.class))).then(invocation -> {
+        when(executor.submit(Mockito.any(Runnable.class))).then(invocation -> {
             new Thread((Runnable) invocation.getArguments()[0]).run();
             semaphore.release();
             return null;

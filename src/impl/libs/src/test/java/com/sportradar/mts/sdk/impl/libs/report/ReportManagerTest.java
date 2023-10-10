@@ -26,11 +26,10 @@ import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
 
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 
-@SuppressWarnings({"unchecked", "UnstableApiUsage"})
+@SuppressWarnings({"unchecked"})
 public class ReportManagerTest {
     private static final String URL_DATA1 = "csv/ccf_history_change_export_data_1.csv";
     private static final String URL_DATA2 = "csv/ccf_history_change_export_data_2.csv";
@@ -50,7 +49,7 @@ public class ReportManagerTest {
         accessTokenCache = (LoadingCache<String, AccessToken>) mock(LoadingCache.class);
         stringData1 = Resources.toString(Resources.getResource(URL_DATA1), StandardCharsets.UTF_8);
 
-        when(accessTokenCache.get(any(), any())).thenReturn(new AccessTokenImpl("token", 0));
+        when(accessTokenCache.get(any())).thenReturn(new AccessTokenImpl("token", 0));
         when(ccfHistoryChangeExportCsvDataProvider.getData(any(AccessToken.class), anyString(), anyString(), anyString(), anyString(), anyString(), eq("sdkTest"))).thenReturn(
                 ReportManagerTest.class.getClassLoader().getResourceAsStream(URL_DATA1));
         when(ccfHistoryChangeExportCsvDataProvider.getData(any(AccessToken.class), anyString(), anyString(), anyString(), anyString(), anyString(), eq("sdkTest2"))).thenReturn(

@@ -13,7 +13,6 @@ import com.sportradar.mts.sdk.api.enums.OddsChangeType;
 import com.sportradar.mts.sdk.api.impl.TicketImpl;
 import com.sportradar.mts.sdk.api.utils.MtsTicketHelper;
 import com.sportradar.mts.sdk.api.utils.SdkInfo;
-import org.apache.commons.lang.NullArgumentException;
 
 import java.util.Date;
 import java.util.List;
@@ -116,7 +115,7 @@ public class TicketBuilderImpl implements TicketBuilder {
     @Override
     public TicketBuilder setLastMatchEndTime(Date lastMatchEndTime) {
         if (lastMatchEndTime == null) {
-            throw new NullArgumentException("lastMatchEndTime");
+            throw new IllegalArgumentException("LastMatchEndTime can not be null.");
         }
         if (lastMatchEndTime.before(new Date())) {
             throw new IllegalArgumentException("LastMatchEndTime can not be in the past.");

@@ -4,9 +4,9 @@
   -->
 
 <jaxb:bindings
-        xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+        xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb"
         xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
-        jaxb:extensionBindingPrefixes="xjc" version="2.1">
+        jaxb:extensionBindingPrefixes="xjc" version="3.0">
     <jaxb:bindings schemaLocation="../../../target/customBet-schema/xsd/Selections.xsd">
         <jaxb:globalBindings>
             <xjc:simple />

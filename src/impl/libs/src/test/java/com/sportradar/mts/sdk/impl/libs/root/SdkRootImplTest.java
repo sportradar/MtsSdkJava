@@ -121,7 +121,7 @@ public class SdkRootImplTest extends TimeLimitedTestBase {
                 executorService,
                 sdkLogger);
 
-        when(executorService.awaitTermination(anyInt(), any(TimeUnit.class))).thenReturn(false);
+        when(executorService.awaitTermination(anyLong(), any(TimeUnit.class))).thenReturn(false);
 
         sdkRoot.close();
 
@@ -133,7 +133,7 @@ public class SdkRootImplTest extends TimeLimitedTestBase {
         inOrder.verify(ticketCancelAmqpMessageReceiver, times(1)).close();
         inOrder.verify(channelFactoryProvider, times(1)).unregisterInstance();
         inOrder.verify(executorService, times(1)).shutdown();
-        inOrder.verify(executorService, times(1)).awaitTermination(anyInt(), any(TimeUnit.class));
+        inOrder.verify(executorService, times(1)).awaitTermination(anyLong(), any(TimeUnit.class));
         inOrder.verify(executorService, times(1)).shutdownNow();
         inOrder.verify(sdkLogger, times(1)).close();
         verifyNoMoreInteractions(
@@ -170,7 +170,7 @@ public class SdkRootImplTest extends TimeLimitedTestBase {
         inOrder.verify(channelFactoryProvider, times(1)).registerInstance();
         assertTrue(sdkRoot.isOpen());
 
-        when(executorService.awaitTermination(anyInt(), any(TimeUnit.class))).thenReturn(false);
+        when(executorService.awaitTermination(anyLong(), any(TimeUnit.class))).thenReturn(false);
 
         sdkRoot.close();
 
@@ -182,7 +182,7 @@ public class SdkRootImplTest extends TimeLimitedTestBase {
         inOrder.verify(ticketCancelAmqpMessageReceiver, times(1)).close();
         inOrder.verify(channelFactoryProvider, times(1)).unregisterInstance();
         inOrder.verify(executorService, times(1)).shutdown();
-        inOrder.verify(executorService, times(1)).awaitTermination(anyInt(), any(TimeUnit.class));
+        inOrder.verify(executorService, times(1)).awaitTermination(anyLong(), any(TimeUnit.class));
         inOrder.verify(executorService, times(1)).shutdownNow();
         inOrder.verify(sdkLogger, times(1)).close();
         verifyNoMoreInteractions(
@@ -330,7 +330,7 @@ public class SdkRootImplTest extends TimeLimitedTestBase {
         doAnswer(invocation -> {
             throw new InterruptedException("thrown on executor service await termination");
         })
-                .when(executorService).awaitTermination(anyInt(), any(TimeUnit.class));
+                .when(executorService).awaitTermination(anyLong(), any(TimeUnit.class));
 
         sdkRoot.open();
 
@@ -340,7 +340,7 @@ public class SdkRootImplTest extends TimeLimitedTestBase {
 
         assertFalse(sdkRoot.isOpen());
         verify(executorService, times(1)).shutdown();
-        verify(executorService, times(1)).awaitTermination(anyInt(), any(TimeUnit.class));
+        verify(executorService, times(1)).awaitTermination(anyLong(), any(TimeUnit.class));
         verify(executorService, times(1)).shutdownNow();
         appender.searchLoggingEventByFormattedMessage("interrupted while waiting for executor service to shutdown");
         appender.searchLoggingEventByFormattedMessage("failed to shutdown executor service in time, force stopping");
@@ -378,7 +378,7 @@ public class SdkRootImplTest extends TimeLimitedTestBase {
                 executorService,
                 sdkLogger);
 
-        when(executorService.awaitTermination(anyInt(), any(TimeUnit.class))).thenReturn(true);
+        when(executorService.awaitTermination(anyLong(), any(TimeUnit.class))).thenReturn(true);
 
         sdkRoot.close();
 
@@ -390,7 +390,7 @@ public class SdkRootImplTest extends TimeLimitedTestBase {
         inOrder.verify(ticketCancelAmqpMessageReceiver, times(1)).close();
         inOrder.verify(channelFactoryProvider, times(1)).unregisterInstance();
         inOrder.verify(executorService, times(1)).shutdown();
-        inOrder.verify(executorService, times(1)).awaitTermination(anyInt(), any(TimeUnit.class));
+        inOrder.verify(executorService, times(1)).awaitTermination(anyLong(), any(TimeUnit.class));
         inOrder.verify(sdkLogger, times(1)).close();
         verifyNoMoreInteractions(
                 ticketHandler,

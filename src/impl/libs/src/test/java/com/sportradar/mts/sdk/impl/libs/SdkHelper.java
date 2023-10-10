@@ -19,12 +19,12 @@ import com.sportradar.mts.sdk.api.rest.Deserializer;
 import com.sportradar.mts.sdk.api.rest.DeserializerJaxbApi;
 import com.sportradar.mts.sdk.api.rest.LogHttpDataFetcher;
 import com.sportradar.mts.sdk.api.settings.SdkConfigurationImpl;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;

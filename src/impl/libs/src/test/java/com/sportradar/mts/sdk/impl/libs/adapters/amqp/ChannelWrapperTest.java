@@ -61,7 +61,7 @@ public class ChannelWrapperTest extends TimeLimitedTestBase {
     @Test
     public void close_OnExceptionThrownTest() throws IOException, TimeoutException {
         assertThat(underlyingChannel, is(notNullValue()));
-        doThrow(Exception.class).when(underlyingChannel).close();
+        doThrow(IOException.class).when(underlyingChannel).close();
         LoggerTestAppender appender = new LoggerTestAppender(ChannelWrapper.class);
 
         channelWrapper.close();

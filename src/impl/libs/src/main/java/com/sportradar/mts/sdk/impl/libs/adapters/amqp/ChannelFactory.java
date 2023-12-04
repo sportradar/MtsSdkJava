@@ -10,6 +10,7 @@ import com.sportradar.mts.sdk.api.utils.SdkInfo;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -17,6 +18,8 @@ import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 public final class ChannelFactory {
+
+    private final Format formatter = new SimpleDateFormat("yyyyMMddHHmm");
 
     private final ConnectionWrapper connectionWrapper;
 
@@ -43,6 +46,8 @@ public final class ChannelFactory {
         clientProperties.putIfAbsent("SrMtsSdkInit", new SimpleDateFormat("yyyyMMddHHmm").format(new Date()));
         clientProperties.putIfAbsent("SrMtsSdkConnName", "RabbitMQ / Java");
         clientProperties.putIfAbsent("SrMtsSdkBId", String.valueOf(mqCluster.getBookmakerId()));
+        clientProperties.putIfAbsent("connection_name", String.format("MTS|JAVA|%s|%s|%s|%s", SdkInfo.getVersion(), formatter.format(new Date()),
+                RabbitMqConsumer.getSystemUptime(), RabbitMqConsumer.getPID()));
         connectionFactory.setClientProperties(clientProperties);
 
         this.connectionWrapper = new ConnectionWrapper(channelFactoryProvider, connectionFactory, mqCluster, connectionStatus);

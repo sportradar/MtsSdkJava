@@ -290,7 +290,7 @@ public final class RabbitMqConsumer extends RabbitMqBase implements AmqpConsumer
         public int retryCount;
     }
 
-    private static long getPID()
+    public static long getPID()
     {
         try
         {
@@ -307,7 +307,7 @@ public final class RabbitMqConsumer extends RabbitMqBase implements AmqpConsumer
         return 0;
     }
 
-    private static long getSystemUptime() {
+    public static long getSystemUptime() {
         long uptime = -1;
         try {
             String os = System.getProperty("os.name").toLowerCase();

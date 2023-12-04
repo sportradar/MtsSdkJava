@@ -97,8 +97,8 @@ public abstract class RabbitMqBase implements Openable {
             for (int i = 0; i < this.concurrencyLevel; i++) {
                 final int threadId = (i + 1);
                 this.threads[i] = new RecoverableThread(threadPrefix + threadId,
-                                                        true,
-                                                        new BackgroundWork(this, threadId));
+                        true,
+                        new BackgroundWork(this, threadId));
             }
 
             this.isOpen = true;
@@ -117,18 +117,18 @@ public abstract class RabbitMqBase implements Openable {
     private void tryCreateExchange(ChannelWrapper channelWrapper) throws IOException {
         try {
             channelWrapper.getChannel().exchangeDeclare(this.exchangeName,
-                                                        this.exchangeType,
-                                                        DURABLE,
-                                                        AUTO_DELETE,
-                                                        null);
+                    this.exchangeType,
+                    DURABLE,
+                    AUTO_DELETE,
+                    null);
         } catch (IOException ioe) {
             logger.warn("Exchange {} creation failed, will try to recreate it", this.exchangeName);
             channelWrapper.getChannel().exchangeDelete(this.exchangeName);
             channelWrapper.getChannel().exchangeDeclare(this.exchangeName,
-                                                        this.exchangeType,
-                                                        DURABLE,
-                                                        AUTO_DELETE,
-                                                        null);
+                    this.exchangeType,
+                    DURABLE,
+                    AUTO_DELETE,
+                    null);
         }
     }
 
@@ -196,13 +196,13 @@ public abstract class RabbitMqBase implements Openable {
                 } catch (IOException exc) {
                     this.sleepMillis = getSleepMillis(isConnectionException(exc), this.sleepMillis);
                     logger.error("Unexpected connection exception while doing background work; sleepMillis={}",
-                                 this.sleepMillis,
-                                 exc);
+                            this.sleepMillis,
+                            exc);
                 } catch (ShutdownSignalException exc) {
                     this.sleepMillis = getSleepMillis(true, this.sleepMillis);
                     logger.error("Unexpected connection exception while doing background work; sleepMillis={}",
-                                 this.sleepMillis,
-                                 exc);
+                            this.sleepMillis,
+                            exc);
                 } catch (Exception e) {
                     logger.warn("unknown exception; unchanged sleepMillis={}", sleepMillis);
                     this.sleepMillis = 1000L;
@@ -227,10 +227,10 @@ public abstract class RabbitMqBase implements Openable {
             }
 
             if (oldSleepMillis == 0L) {
-                return 1000L;
+                return 100L;
             }
 
-            if (oldSleepMillis < 64000L) {
+            if (oldSleepMillis < 5000L) {
                 oldSleepMillis = oldSleepMillis << 1;
             }
             return oldSleepMillis;

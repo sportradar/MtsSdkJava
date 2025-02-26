@@ -18,6 +18,7 @@ import com.sportradar.mts.api.rest.custombet.datamodel.CAPICalculationResponse;
 import com.sportradar.mts.api.rest.sportsapi.datamodel.MarketDescriptions;
 import com.sportradar.mts.sdk.api.AccessToken;
 import com.sportradar.mts.sdk.api.SdkTicket;
+import com.sportradar.mts.sdk.api.TicketSenderWs;
 import com.sportradar.mts.sdk.api.builders.BuilderFactory;
 import com.sportradar.mts.sdk.api.caching.MarketDescriptionCI;
 import com.sportradar.mts.sdk.api.caching.MarketDescriptionCache;
@@ -46,6 +47,9 @@ import com.sportradar.mts.sdk.impl.libs.logging.SdkLogger;
 import com.sportradar.mts.sdk.impl.libs.receivers.*;
 import com.sportradar.mts.sdk.impl.libs.root.SdkRoot;
 import com.sportradar.mts.sdk.impl.libs.root.SdkRootImpl;
+import com.sportradar.mts.sdk.impl.libs.ws.MbsSdkConfig;
+import com.sportradar.mts.sdk.impl.libs.ws.config.ImmutableConfig;
+import com.sportradar.mts.sdk.impl.libs.ws.stuff.ProtocolEngine;
 import jakarta.inject.Singleton;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
@@ -59,6 +63,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -107,6 +112,7 @@ public class SdkInjectionModule extends AbstractModule {
                                   ScheduledExecutorService executorService,
                                   ChannelFactoryProvider channelFactoryProvider,
                                   TicketHandler ticketHandler,
+                                  TicketSenderWs wsTicketHandler,
                                   @TicketResponseMessageReceiverBinding AmqpMessageReceiver ticketAmqpMessageReceiver,
                                   TicketCancelHandler ticketCancelHandler,
                                   @TicketCancelResponseMessageReceiverBinding AmqpMessageReceiver ticketCancelAmqpMessageReceiver,
@@ -122,6 +128,7 @@ public class SdkInjectionModule extends AbstractModule {
                 executorService,
                 channelFactoryProvider,
                 ticketHandler,
+                wsTicketHandler,
                 ticketAmqpMessageReceiver,
                 ticketCancelHandler,
                 ticketCancelAmqpMessageReceiver,
@@ -155,6 +162,42 @@ public class SdkInjectionModule extends AbstractModule {
                 sdkConfiguration.getTicketResponseTimeoutPrematch(),
                 sdkConfiguration.getMessagesPerSecond(),
                 sdkLogger);
+    }
+
+    @Singleton
+    @Provides
+    public TicketSenderWs provideWsTicketHandler(
+            ProtocolEngine engine,
+            ScheduledExecutorService executorService,
+            SdkLogger sdkLogger) {
+        return new TicketHandlerWsImpl( // todo dmuren mogoce pogledat config settinge v originalu
+                sdkLogger,
+                engine,
+                executorService);//,
+//                getTimeoutHandler(executorService, sdkConfiguration.getTicketResponseTimeoutLive(), sdkConfiguration.getTicketResponseTimeoutPrematch())); // todo dmuren reuse configs
+    }
+
+    @Singleton
+    @Provides
+    public ProtocolEngine provideEngine(MbsSdkConfig sdkConfig) { // todo dmuren mogoce bo tole za narest z new
+        final ImmutableConfig config = new ImmutableConfig(sdkConfig);
+        return new ProtocolEngine(
+                config,
+                e -> {
+                    System.out.println("Unhandled exception: " + e); // todo dmuren haha
+                });
+    }
+
+    @Singleton
+    @Provides
+    public MbsSdkConfig provideMbsSdkConfig() {
+        URI wsServer = URI.create("wss://euc1.wss-ticket.dataplane-nonprod.sportradar.dev");
+        URI authServer = URI.create("https://auth.sportradar.com/oauth/token");
+        String authClientId = "vIzVKcVxbaND3CnLbLcHNhfCJ3zlOSm6";
+        String authClientSecret = "L8k1uLhfL92tGyftuvj53n83atIAIaNIaTifzbrP0fnY5eteETvac-JK_Mkp6drq";
+        String authAudience = "mbs-dp-non-prod-wss";
+        long operatorId = 1234L;
+        return new MbsSdkConfig(wsServer, authServer, authClientId, authClientSecret, authAudience, operatorId);
     }
 
     @Singleton
@@ -388,7 +431,7 @@ public class SdkInjectionModule extends AbstractModule {
                 ExchangeType.TOPIC,
                 queueName,
                 1,
-                                    SdkInfo.RABBIT_PREFETCH_COUNT,
+                SdkInfo.RABBIT_PREFETCH_COUNT,
                 1,
                 false,
                 sdkConfiguration.getExclusiveConsumer());
@@ -412,7 +455,7 @@ public class SdkInjectionModule extends AbstractModule {
                 ExchangeType.TOPIC,
                 queueName,
                 1,
-                                    SdkInfo.RABBIT_PREFETCH_COUNT,
+                SdkInfo.RABBIT_PREFETCH_COUNT,
                 1,
                 false,
                 sdkConfiguration.getExclusiveConsumer());
@@ -435,7 +478,7 @@ public class SdkInjectionModule extends AbstractModule {
                 ExchangeType.TOPIC,
                 queueName,
                 1,
-                                    SdkInfo.RABBIT_PREFETCH_COUNT,
+                SdkInfo.RABBIT_PREFETCH_COUNT,
                 1,
                 false,
                 sdkConfiguration.getExclusiveConsumer());
@@ -458,7 +501,7 @@ public class SdkInjectionModule extends AbstractModule {
                 ExchangeType.TOPIC,
                 queueName,
                 1,
-                                    SdkInfo.RABBIT_PREFETCH_COUNT,
+                SdkInfo.RABBIT_PREFETCH_COUNT,
                 1,
                 false,
                 sdkConfiguration.getExclusiveConsumer());
@@ -861,7 +904,7 @@ public class SdkInjectionModule extends AbstractModule {
                         String[] values = key.split("\n");
                         String username = values[0];
                         String password = values[1];
-                        HttpEntity content = new UrlEncodedFormEntity( Arrays.asList(
+                        HttpEntity content = new UrlEncodedFormEntity(Arrays.asList(
                                 new BasicNameValuePair("client_id", "mts-edge-ext"),
                                 new BasicNameValuePair("client_secret", sdkConfiguration.getKeycloakSecret()),
                                 new BasicNameValuePair("username", username),

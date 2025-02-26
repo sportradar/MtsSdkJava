@@ -5,10 +5,13 @@
 package com.sportradar.mts.sdk.impl.libs.root;
 
 import com.sportradar.mts.sdk.api.interfaces.*;
+import com.sportradar.mts.sdk.api.TicketSenderWs;
 
 public interface SdkRoot extends Openable {
 
     TicketSender getTicketSender(TicketResponseListener responseListener);
+
+    TicketSenderWs getTicketSenderWs(TicketResponseListener responseListener);
 
     TicketCancelSender getTicketCancelSender(TicketCancelResponseListener responseListener);
 

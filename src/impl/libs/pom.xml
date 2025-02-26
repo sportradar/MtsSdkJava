@@ -22,12 +22,26 @@
             <artifactId>mts-sdk-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.sportradar.mts.sdk.ws</groupId>
+            <artifactId>mts-sdk-ws</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.rabbitmq</groupId>
             <artifactId>amqp-client</artifactId>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
+        </dependency>
+        <dependency> <!--todo dmuren-->
+            <groupId>org.java-websocket</groupId>
+            <artifactId>Java-WebSocket</artifactId>
+            <version>1.5.5</version>
+        </dependency>
+        <dependency> <!--todo dmuren-->
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>5.0.0-alpha.14</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>

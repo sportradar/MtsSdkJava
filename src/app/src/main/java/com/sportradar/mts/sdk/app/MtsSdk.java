@@ -16,6 +16,7 @@ import com.sportradar.mts.sdk.api.settings.SdkConfigurationBuilderImpl;
 import com.sportradar.mts.sdk.api.settings.SdkConfigurationImpl;
 import com.sportradar.mts.sdk.api.utils.SdkInfo;
 import com.sportradar.mts.sdk.impl.di.SdkInjectionModule;
+import com.sportradar.mts.sdk.api.TicketSenderWs;
 import com.sportradar.mts.sdk.impl.libs.root.SdkRoot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -130,6 +131,12 @@ public class MtsSdk implements MtsSdkApi {
     public TicketSender getTicketSender(TicketResponseListener ticketResponseListener) {
         checkOpened();
         return sdkRoot.getTicketSender(ticketResponseListener);
+    }
+
+    @Override
+    public TicketSenderWs getTicketSenderWs(TicketResponseListener ticketResponseListener) {
+        checkOpened();
+        return sdkRoot.getTicketSenderWs(ticketResponseListener);
     }
 
     @Override

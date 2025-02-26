@@ -4,6 +4,7 @@
 
 package com.sportradar.mts.sdk.impl.libs.root;
 
+import com.sportradar.mts.sdk.api.TicketSenderWs;
 import com.sportradar.mts.sdk.api.interfaces.*;
 import com.sportradar.mts.sdk.impl.libs.LoggerTestAppender;
 import com.sportradar.mts.sdk.impl.libs.TimeLimitedTestBase;
@@ -31,6 +32,7 @@ public class SdkRootImplTest extends TimeLimitedTestBase {
     private ScheduledExecutorService executorService;
     private ChannelFactoryProvider channelFactoryProvider;
     private TicketHandler ticketHandler;
+    private TicketSenderWs ticketHandlerWs;
     private AmqpMessageReceiver ticketAmqpMessageReceiver;
     private TicketCancelHandler ticketCancelSender;
     private AmqpMessageReceiver ticketCancelAmqpMessageReceiver;
@@ -50,6 +52,7 @@ public class SdkRootImplTest extends TimeLimitedTestBase {
         executorService = mock(ScheduledExecutorService.class);
         channelFactoryProvider = mock(ChannelFactoryProvider.class);
         ticketHandler = mock(TicketHandler.class);
+        ticketHandlerWs = mock(TicketHandlerWsImpl.class);
         ticketAmqpMessageReceiver = mock(AmqpMessageReceiver.class);
         ticketCancelSender = mock(TicketCancelHandler.class);
         ticketCancelAmqpMessageReceiver = mock(AmqpMessageReceiver.class);
@@ -66,6 +69,7 @@ public class SdkRootImplTest extends TimeLimitedTestBase {
                 executorService,
                 channelFactoryProvider,
                 ticketHandler,
+                ticketHandlerWs,
                 ticketAmqpMessageReceiver,
                 ticketCancelSender,
                 ticketCancelAmqpMessageReceiver,

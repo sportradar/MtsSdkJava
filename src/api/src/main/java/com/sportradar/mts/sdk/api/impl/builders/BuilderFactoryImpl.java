@@ -18,7 +18,7 @@ public class BuilderFactoryImpl extends SimpleBuilderFactoryImpl implements Buil
     public BuilderFactoryImpl(SdkConfiguration config, MarketDescriptionProvider marketDescriptionProvider)
     {
         Preconditions.checkNotNull(config);
-        Preconditions.checkNotNull(marketDescriptionProvider);
+//        Preconditions.checkNotNull(marketDescriptionProvider);
 
         this.config = config;
         this.marketDescriptionProvider = marketDescriptionProvider;

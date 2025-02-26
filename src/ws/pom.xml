@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>mts-sdk</artifactId>
+        <groupId>com.sportradar.mts.sdk</groupId>
+        <version>2.4.1.2</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.sportradar.mts.sdk.ws</groupId>
+    <artifactId>mts-sdk-ws</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.16.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.java-websocket</groupId>
+            <artifactId>Java-WebSocket</artifactId>
+            <version>1.5.5</version>
+        </dependency>
+        <dependency> <!--todo dmuren-->
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>5.0.0-alpha.14</version>
+        </dependency>
+    </dependencies>
+
+<!--    <build>-->
+<!--        <plugins>-->
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-source-plugin</artifactId>-->
+<!--                <version>3.0.1</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>attach-sources</id>-->
+<!--                        <goals>-->
+<!--                            <goal>jar</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--                <configuration>-->
+<!--                    <excludeResources>true</excludeResources>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
+<!--            <plugin>-->
+<!--                <artifactId>maven-javadoc-plugin</artifactId>-->
+<!--                <version>3.0.0-M1</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>javadoc-jar</id>-->
+<!--                        <phase>package</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>jar</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <outputDirectory>${project.build.directory}/javadoc</outputDirectory>-->
+<!--                            <windowtitle>MTS SDK ${project.version} API</windowtitle>-->
+<!--                            <doctitle>MTS SDK ${project.version} API</doctitle>-->
+<!--                            <includeDependencySources>true</includeDependencySources>-->
+<!--                            <dependencySourceIncludes>-->
+<!--                                &lt;!&ndash;Specify the package that we want the javadoc included. The parent artifact-->
+<!--                                of the package must be listed as a dependency of the distribution module.&ndash;&gt;-->
+<!--                                <dependencySourceInclude>com.sportradar.mts.*</dependencySourceInclude>-->
+<!--                            </dependencySourceIncludes>-->
+<!--                            <failOnError>false</failOnError>-->
+<!--                            <excludePackageNames>-->
+<!--                                *com.sportradar.mts.sdk.api.caching*-->
+<!--                                *com.sportradar.mts.sdk.api.impl*-->
+<!--                                *com.sportradar.mts.sdk.api.rest*-->
+<!--                                *com.sportradar.mts.sdk.api.settings*-->
+<!--                                *com.sportradar.mts.sdk.api.utils*-->
+<!--                                *datamodel*-->
+<!--                            </excludePackageNames>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                    <execution>-->
+<!--                        <id>attach-javadocs</id>-->
+<!--                        <phase>package</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>aggregate-jar</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <classifier>javadoc</classifier>-->
+<!--                            <show>public</show>-->
+<!--                            <includeDependencySources>true</includeDependencySources>-->
+<!--                            <dependencySourceIncludes>-->
+<!--                                &lt;!&ndash;Specify the package that we want the javadoc included. The parent artifact-->
+<!--                                of the package must be listed as a dependency of the distribution module.&ndash;&gt;-->
+<!--                                <dependencySourceInclude>com.sportradar.mts.*</dependencySourceInclude>-->
+<!--                            </dependencySourceIncludes>-->
+<!--                            <failOnError>false</failOnError>-->
+<!--                            <excludePackageNames>-->
+<!--                                *com.sportradar.mts.sdk.api.caching*-->
+<!--                                *com.sportradar.mts.sdk.api.impl*-->
+<!--                                *com.sportradar.mts.sdk.api.rest*-->
+<!--                                *com.sportradar.mts.sdk.api.settings*-->
+<!--                                *com.sportradar.mts.sdk.api.utils*-->
+<!--                                *datamodel*-->
+<!--                            </excludePackageNames>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
+<!--        </plugins>-->
+<!--    </build>-->
+
+</project>

@@ -39,7 +39,7 @@ public class SelectionBuilderImpl implements SelectionBuilder {
     private final boolean isCustomBet;
 
     public SelectionBuilderImpl(MarketDescriptionProvider marketDescriptionProvider, SdkConfiguration config, boolean isCustomBet) {
-        Preconditions.checkNotNull(marketDescriptionProvider);
+//        Preconditions.checkNotNull(marketDescriptionProvider);
         Preconditions.checkNotNull(config);
 
         this.marketDescriptionProvider = marketDescriptionProvider;

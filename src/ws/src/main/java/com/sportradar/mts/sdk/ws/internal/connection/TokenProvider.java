@@ -1,9 +1,8 @@
 package com.sportradar.mts.sdk.ws.internal.connection;
 
+import com.sportradar.mts.sdk.api.interfaces.SdkConfiguration;
 import com.sportradar.mts.sdk.ws.exceptions.AuthTokenFailureException;
 import com.sportradar.mts.sdk.ws.exceptions.SdkException;
-import com.sportradar.mts.sdk.ws.internal.config.ImmutableConfig;
-import com.sportradar.mts.sdk.ws.internal.config.TokenProviderConfig;
 import com.sportradar.mts.sdk.ws.internal.utils.Json;
 import okhttp3.*;
 
@@ -16,13 +15,13 @@ import static com.sportradar.mts.sdk.ws.internal.utils.TimeUtils.sleep;
 
 public class TokenProvider implements AutoCloseable {
 
-    private final TokenProviderConfig config;
+    private final SdkConfiguration config;
     private final OkHttpClient okHttpClient;
 
     private String accessToken;
     private long accessTokenExpiry;
 
-    public TokenProvider(final ImmutableConfig config) {
+    public TokenProvider(final SdkConfiguration config) {
         this.config = config;
         this.okHttpClient = new OkHttpClient.Builder()
                 .callTimeout(config.getAuthRequestTimeout())
@@ -33,7 +32,7 @@ public class TokenProvider implements AutoCloseable {
         try {
             return URLEncoder.encode(value, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e); // todo dmuren
+            throw new RuntimeException(e);
         }
     }
 
@@ -104,7 +103,7 @@ public class TokenProvider implements AutoCloseable {
                     .build();
             try (Response response = okHttpClient.newCall(request).execute()) {
                 if (!response.isSuccessful()) {
-                    throw new AuthTokenFailureException("Auth request failed: " + response.code()); // todo dmuren handle failure
+                    throw new AuthTokenFailureException("Auth request failed: " + response.code());
                 }
                 return Json.deserializeAuthResponse(response.body().string());
             }

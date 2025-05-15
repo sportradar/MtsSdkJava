@@ -1,20 +1,15 @@
 package com.sportradar.mts.sdk.ws.internal.protocol;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.sportradar.mts.sdk.api.SdkTicket;
+import com.sportradar.mts.sdk.api.TicketResponse;
+import com.sportradar.mts.sdk.api.interfaces.SdkConfiguration;
+import com.sportradar.mts.sdk.api.utils.JsonUtils;
 import com.sportradar.mts.sdk.ws.entities.internal.Request;
 import com.sportradar.mts.sdk.ws.entities.internal.Response;
-import com.sportradar.mts.sdk.ws.entities.request.ContentRequest;
-import com.sportradar.mts.sdk.ws.entities.response.ContentResponse;
-import com.sportradar.mts.sdk.ws.entities.response.ErrorResponse;
 import com.sportradar.mts.sdk.ws.exceptions.*;
-import com.sportradar.mts.sdk.ws.internal.config.ImmutableConfig;
-import com.sportradar.mts.sdk.ws.internal.config.ProtocolHandlerConfig;
 import com.sportradar.mts.sdk.ws.internal.connection.ConnectionProvider;
 import com.sportradar.mts.sdk.ws.internal.connection.msg.*;
-import com.sportradar.mts.sdk.ws.internal.connection.msg.ExcWsOutputMessage;
-import com.sportradar.mts.sdk.ws.internal.connection.msg.NotProcessedWsOutputMessage;
-import com.sportradar.mts.sdk.ws.internal.connection.msg.ReceivedContentWsOutputMessage;
-import com.sportradar.mts.sdk.ws.internal.connection.msg.SendWsInputMessage;
 import com.sportradar.mts.sdk.ws.internal.connection.msg.base.WsInputMessage;
 import com.sportradar.mts.sdk.ws.internal.connection.msg.base.WsOutputMessage;
 import com.sportradar.mts.sdk.ws.internal.utils.ExcSuppress;
@@ -39,11 +34,11 @@ public class ProtocolEngine implements AutoCloseable {
     private static final int MAX_CHUNK_SIZE = 32_000;
     private static final int MAX_MSG_SIZE = 4 * MAX_CHUNK_SIZE;
 
-    private final ProtocolHandlerConfig config;
+    private final SdkConfiguration sdkConfiguration;
     private final ConnectionProvider connectionProvider;
     private final BlockingQueue<WsInputMessage> sendQueue;
     private final BlockingQueue<WsOutputMessage> receiveQueue;
-    private final ConcurrentMap<String, Awaiter<?>> correlationIdAwaiter;
+    private final ConcurrentMap<String, Awaiter<?, ?>> correlationIdAwaiter;
     private final AtomicInteger approxRequestCount;
     private final Consumer<Exception> unhandledExceptionHandler;
 
@@ -51,18 +46,20 @@ public class ProtocolEngine implements AutoCloseable {
 
     private Thread[] receiverThreads;
 
-    public ProtocolEngine(final ImmutableConfig config, final Consumer<Exception> unhandledExceptionHandler) {
-        this.config = config;
+    public ProtocolEngine(
+            final SdkConfiguration sdkConfiguration,
+            final Consumer<Exception> unhandledExceptionHandler) {
+        this.sdkConfiguration = sdkConfiguration;
         this.sendQueue = new LinkedBlockingQueue<>();
         this.receiveQueue = new LinkedBlockingQueue<>();
         this.correlationIdAwaiter = new ConcurrentHashMap<>();
         this.approxRequestCount = new AtomicInteger(0);
-        this.connectionProvider = new ConnectionProvider(config, sendQueue, receiveQueue);
+        this.connectionProvider = new ConnectionProvider(sdkConfiguration, sendQueue, receiveQueue);
         this.unhandledExceptionHandler = unhandledExceptionHandler;
     }
 
     public void connect() {
-        this.receiverThreads = new Thread[config.getProtocolNumberOfDispatchers()];
+        this.receiverThreads = new Thread[sdkConfiguration.getProtocolNumberOfDispatchers()];
         this.connected = true;
         for (int i = 0; i < this.receiverThreads.length; i++) {
             final Thread thread = new Thread(this::receiveLoop);
@@ -87,21 +84,24 @@ public class ProtocolEngine implements AutoCloseable {
         }
     }
 
-    public <T extends ContentRequest, R extends ContentResponse> CompletableFuture<R> execute(
-            final String operation, final T content, final Class<R> responseClass) {
+    public <T extends SdkTicket, R extends TicketResponse> CompletableFuture<R> execute(
+            final String operation,
+            final T content,
+            final Class<R> responseClass,
+            final Runnable publishSuccessListener) {
         String correlationId = null;
         try {
             checkConnected();
 
-            final Awaiter<R> awaiter = createAwaiter(responseClass);
+            final Awaiter<T, R> awaiter = createAwaiter(responseClass, publishSuccessListener);
             correlationId = awaiter.getCorrelationId();
 
             final Request request = new Request();
             request.setContent(content);
             request.setOperation(operation);
             request.setCorrelationId(correlationId);
-            request.setVersion("3.0");
-            request.setOperatorId(this.config.getOperatorId());
+            request.setVersion("2.4");
+            request.setOperatorId(sdkConfiguration.getOperatorId());
             request.setTimestampUtc(nowUtcMillis());
 
             final List<ByteBuffer> frames = createFrames(request);
@@ -121,8 +121,9 @@ public class ProtocolEngine implements AutoCloseable {
         }
     }
 
-    private <R extends ContentResponse> void enqueueSendMsg(final Awaiter<R> awaiter, final int retryCount) {
-        if (retryCount > config.getProtocolRetryCount()) {
+    private <T extends SdkTicket, R extends TicketResponse> void enqueueSendMsg(
+            final Awaiter<T, R> awaiter, final int retryCount) {
+        if (retryCount > sdkConfiguration.getProtocolRetryCount()) {
             awaiter.completeWithException(new ProtocolTimeoutException());
             releaseAwaiter(awaiter.getCorrelationId());
             return;
@@ -136,7 +137,7 @@ public class ProtocolEngine implements AutoCloseable {
 
         final int nextRetryCount = retryCount + 1;
         delay(() -> enqueueSendMsg(awaiter, nextRetryCount),
-                config.getProtocolReceiveResponseTimeout().toMillis(), TimeUnit.MILLISECONDS);
+                sdkConfiguration.getProtocolReceiveResponseTimeout().toMillis(), TimeUnit.MILLISECONDS);
     }
 
     private List<ByteBuffer> createFrames(final Request request) throws JsonProcessingException {
@@ -157,12 +158,13 @@ public class ProtocolEngine implements AutoCloseable {
         return result;
     }
 
-    private <O extends ContentResponse> Awaiter<O> createAwaiter(final Class<O> responseClass) {
-        if (approxRequestCount.get() > config.getProtocolMaxSendBufferSize()) {
+    private <T extends SdkTicket, R extends SdkTicket> Awaiter<T, R> createAwaiter(
+            final Class<R> responseClass, Runnable resultListener) {
+        if (approxRequestCount.get() > sdkConfiguration.getProtocolMaxSendBufferSize()) {
             throw new ProtocolSendBufferFullException();
         }
 
-        final Awaiter<O> awaiter = new Awaiter<>(responseClass);
+        final Awaiter<T, R> awaiter = new Awaiter<>(responseClass, resultListener);
         while (true) {
             final String correlationId = randomString();
             if (correlationIdAwaiter.putIfAbsent(correlationId, awaiter) == null) {
@@ -178,7 +180,7 @@ public class ProtocolEngine implements AutoCloseable {
         if (correlationId == null) {
             return;
         }
-        final Awaiter<?> awaiter = correlationIdAwaiter.remove(correlationId);
+        final Awaiter<?, ?> awaiter = correlationIdAwaiter.remove(correlationId);
         if (awaiter == null) {
             return;
         }
@@ -190,7 +192,7 @@ public class ProtocolEngine implements AutoCloseable {
         while (this.connected) {
             try {
                 final WsOutputMessage msg = this.receiveQueue.poll(
-                        config.getProtocolDequeueTimeout().toMillis(), MILLISECONDS);
+                        sdkConfiguration.getProtocolDequeueTimeout().toMillis(), MILLISECONDS);
                 if (msg == null) {
                     continue;
                 }
@@ -203,27 +205,29 @@ public class ProtocolEngine implements AutoCloseable {
     }
 
     private void handleWsOutputMsg(final WsOutputMessage msg) {
-//        if (msg instanceof final ReceivedContentWsOutputMessage m) {
-//            handleReceivedContentWsOutputMessage(m);
-//        } else if (msg instanceof final ExcWsOutputMessage m) {
-//            handleExcWsOutputMessage(m);
-//        } else if (msg instanceof final NotProcessedWsOutputMessage m) {
-//            handleNotProcessedWsOutputMessage(m);
-//        }
-        if (msg instanceof ReceivedContentWsOutputMessage) { // todo dmuren responseReceived pomoje
+        if (msg instanceof ReceivedContentWsOutputMessage) {
             handleReceivedContentWsOutputMessage((ReceivedContentWsOutputMessage)msg);
-        } else if (msg instanceof ExcWsOutputMessage) { // todo dmuren publishFailure? se cel kup drugih errorjev to triggera
+        } else if (msg instanceof ExcWsOutputMessage) {
             handleExcWsOutputMessage((ExcWsOutputMessage)msg);
-        } else if (msg instanceof NotProcessedWsOutputMessage) { // todo dmuren publishFailure? didn't get published actually ...
+        } else if (msg instanceof NotProcessedWsOutputMessage) {
             handleNotProcessedWsOutputMessage((NotProcessedWsOutputMessage)msg);
-        } else if (msg instanceof SentWsOutputMessage) { // todo dmuren not here originally
-            // todo dmuren publishSuccess - mogoce treba not prpeljat listenerja? i guess.
+        } else if (msg instanceof SentWsOutputMessage) {
+            handleSentWsOutputMessage((SentWsOutputMessage)msg);
         }
+    }
+
+    private void handleSentWsOutputMessage(SentWsOutputMessage msg) {
+        if (msg.getCorrelationId() == null) {
+            handleException(new ProtocolInvalidResponseException("Missing CorrelationId in sent message: " + msg));
+            return;
+        }
+        final Awaiter<?, ?> awaiter = correlationIdAwaiter.get(msg.getCorrelationId());
+        awaiter.notifyPublishSuccess();
     }
 
     private void handleReceivedContentWsOutputMessage(final ReceivedContentWsOutputMessage msg) {
         try {
-            final Response response = Json.deserializeResponse(msg.getContent());
+            Response response = JsonUtils.deserialize(msg.getContent(), Response.class);
             if (response.getCorrelationId() == null) {
                 handleException(new ProtocolInvalidResponseException("Missing CorrelationId: " + msg.getContent()));
                 return;
@@ -273,7 +277,7 @@ public class ProtocolEngine implements AutoCloseable {
         if (correlationId == null) {
             return false;
         }
-        final Awaiter<?> awaiter = correlationIdAwaiter.get(correlationId);
+        final Awaiter<?, ?> awaiter = correlationIdAwaiter.get(correlationId);
         if (response.getContent() != null
                 && awaiter != null
                 && awaiter.checkResponseType(response.getContent())) {
@@ -288,7 +292,7 @@ public class ProtocolEngine implements AutoCloseable {
         if (correlationId == null) {
             return false;
         }
-        final Awaiter<?> awaiter = correlationIdAwaiter.get(correlationId);
+        final Awaiter<?, ?> awaiter = correlationIdAwaiter.get(correlationId);
         if (awaiter != null) {
             awaiter.completeWithException(sdkException);
             releaseAwaiter(correlationId);

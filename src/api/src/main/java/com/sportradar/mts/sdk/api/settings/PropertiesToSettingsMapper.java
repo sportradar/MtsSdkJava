@@ -11,6 +11,8 @@ import com.sportradar.mts.sdk.api.interfaces.SdkConfiguration;
 import com.sportradar.mts.sdk.api.utils.SdkInfo;
 import com.sportradar.mts.sdk.api.utils.StringUtils;
 
+import java.net.URI;
+import java.time.Duration;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
@@ -53,6 +55,30 @@ public final class PropertiesToSettingsMapper {
         String keycloakPassword = properties.getProperty(SettingsKeys.KEYCLOAK_PASSWORD);
         String keycloakSecret = properties.getProperty(SettingsKeys.KEYCLOAK_SECRET);
         String mtsClientApiHost = properties.getProperty(SettingsKeys.MTS_CLIENT_API_HOST);
+
+        String useWebSocketString = properties.getProperty(SettingsKeys.USE_WEB_SOCKET);
+        String authServerString = properties.getProperty(SettingsKeys.AUTH_SERVER);
+        String authClientIdString = properties.getProperty(SettingsKeys.AUTH_CLIENT_ID);
+        String authClientSecretString = properties.getProperty(SettingsKeys.AUTH_CLIENT_SECRET);
+        String authAudienceString = properties.getProperty(SettingsKeys.AUTH_AUDIENCE);
+        String authRequestTimeoutString = properties.getProperty(SettingsKeys.AUTH_REQUEST_TIMEOUT);
+        String authRetryDelayString = properties.getProperty(SettingsKeys.AUTH_RETRY_DELAY);
+        String wsServerString = properties.getProperty(SettingsKeys.WS_SERVER);
+        String wsReconnectTimeoutString = properties.getProperty(SettingsKeys.WS_RECONNECT_TIMEOUT);
+        String wsFetchMessageTimeoutString = properties.getProperty(SettingsKeys.WS_FETCH_MESSAGE_TIMEOUT);
+        String wsSendMessageTimeoutString = properties.getProperty(SettingsKeys.WS_SEND_MESSAGE_TIMEOUT);
+        String wsReceiveMessageTimeoutString = properties.getProperty(SettingsKeys.WS_RECEIVE_MESSAGE_TIMEOUT);
+        String wsConsumerGraceTimeoutString = properties.getProperty(SettingsKeys.WS_CONSUMER_GRACE_TIMEOUT);
+        String wsRefreshConnectionTimeoutString = properties.getProperty(SettingsKeys.WS_REFRESH_CONNECTION_TIMEOUT);
+        String wsNumberOfConnectionsString = properties.getProperty(SettingsKeys.WS_NUMBER_OF_CONNECTIONS);
+        String operatorIdString = properties.getProperty(SettingsKeys.OPERATOR_ID);
+        String protocolConnectTimeoutString = properties.getProperty(SettingsKeys.PROTOCOL_CONNECT_TIMEOUT);
+        String protocolMaxSendBufferSizeString = properties.getProperty(SettingsKeys.PROTOCOL_MAX_SEND_BUFFER_SIZE);
+        String protocolEnqueueTimeoutString = properties.getProperty(SettingsKeys.PROTOCOL_ENQUEUE_TIMEOUT);
+        String protocolDequeueTimeoutString = properties.getProperty(SettingsKeys.PROTOCOL_DEQUEUE_TIMEOUT);
+        String protocolReceiveResponseTimeoutString = properties.getProperty(SettingsKeys.PROTOCOL_RECEIVE_RESPONSE_TIMEOUT);
+        String protocolRetryCountString = properties.getProperty(SettingsKeys.PROTOCOL_RETRY_COUNT);
+        String protocolNumberOfDispatchersString = properties.getProperty(SettingsKeys.PROTOCOL_NUMBER_OF_DISPATCHERS);
 
         Preconditions.checkNotNull(username, StringUtils.format(MISSING_PROPERTY, SettingsKeys.USERNAME));
         Preconditions.checkArgument(!username.isEmpty());
@@ -206,6 +232,167 @@ public final class PropertiesToSettingsMapper {
             Preconditions.checkNotNull(keycloakSecret, StringUtils.format(MISSING_PROPERTY, SettingsKeys.KEYCLOAK_SECRET));
         }
 
+        // todo dmuren default settings logic doublecheck
+        boolean useWebSocket = false;
+        if (useWebSocketString != null) {
+            Preconditions.checkArgument(isBoolean(useWebSocketString), "useWebSocket should be boolean");
+            useWebSocket = Boolean.valueOf(useWebSocketString);
+        }
+
+        URI authServer;
+        if (authServerString != null) {
+            authServer = URI.create(authServerString);
+        } else {
+            authServer = URI.create(keycloakHost);
+        }
+
+        String authClientId;
+        if (authClientIdString != null) {
+            authClientId = authClientIdString;
+        } else {
+            authClientId = "mts-client";
+        }
+
+        String authClientSecret;
+        if (authClientSecretString != null) {
+            authClientSecret = authClientSecretString;
+        } else {
+            authClientSecret = keycloakSecret;
+        }
+
+        String authAudience;
+        if (authAudienceString != null) {
+            authAudience = authAudienceString;
+        } else {
+            authAudience = "mts";
+        }
+
+        Duration authRequestTimeout;
+        if (authRequestTimeoutString != null) {
+            authRequestTimeout = Duration.ofMillis(Long.parseLong(authRequestTimeoutString));
+        } else {
+            authRequestTimeout = Duration.ofSeconds(30);
+        }
+
+        Duration authRetryDelay;
+        if (authRetryDelayString != null) {
+            authRetryDelay = Duration.ofMillis(Long.parseLong(authRetryDelayString));
+        } else {
+            authRetryDelay = Duration.ofSeconds(5);
+        }
+
+        URI wsServer;
+        if (wsServerString != null) {
+            wsServer = URI.create(wsServerString);
+        } else {
+            wsServer = URI.create(host);
+        }
+
+        Duration wsReconnectTimeout;
+        if (wsReconnectTimeoutString != null) {
+            wsReconnectTimeout = Duration.ofMillis(Long.parseLong(wsReconnectTimeoutString));
+        } else {
+            wsReconnectTimeout = Duration.ofSeconds(30);
+        }
+
+        Duration wsFetchMessageTimeout;
+        if (wsFetchMessageTimeoutString != null) {
+            wsFetchMessageTimeout = Duration.ofMillis(Long.parseLong(wsFetchMessageTimeoutString));
+        } else {
+            wsFetchMessageTimeout = Duration.ofSeconds(30);
+        }
+
+        Duration wsSendMessageTimeout;
+        if (wsSendMessageTimeoutString != null) {
+            wsSendMessageTimeout = Duration.ofMillis(Long.parseLong(wsSendMessageTimeoutString));
+        } else {
+            wsSendMessageTimeout = Duration.ofSeconds(30);
+        }
+
+        Duration wsReceiveMessageTimeout;
+        if (wsReceiveMessageTimeoutString != null) {
+            wsReceiveMessageTimeout = Duration.ofMillis(Long.parseLong(wsReceiveMessageTimeoutString));
+        } else {
+            wsReceiveMessageTimeout = Duration.ofSeconds(30);
+        }
+
+        Duration wsConsumerGraceTimeout;
+        if (wsConsumerGraceTimeoutString != null) {
+            wsConsumerGraceTimeout = Duration.ofMillis(Long.parseLong(wsConsumerGraceTimeoutString));
+        } else {
+            wsConsumerGraceTimeout = Duration.ofSeconds(30);
+        }
+
+        Duration wsRefreshConnectionTimeout;
+        if (wsRefreshConnectionTimeoutString != null) {
+            wsRefreshConnectionTimeout = Duration.ofMillis(Long.parseLong(wsRefreshConnectionTimeoutString));
+        } else {
+            wsRefreshConnectionTimeout = Duration.ofSeconds(30);
+        }
+
+        int wsNumberOfConnections;
+        if (wsNumberOfConnectionsString != null) {
+            wsNumberOfConnections = Integer.parseInt(wsNumberOfConnectionsString);
+        } else {
+            wsNumberOfConnections = 1;
+        }
+
+        long operatorId;
+        if (operatorIdString != null) {
+            operatorId = Long.parseLong(operatorIdString);
+        } else {
+            operatorId = 0;
+        }
+
+        Duration protocolConnectTimeout;
+        if (protocolConnectTimeoutString != null) {
+            protocolConnectTimeout = Duration.ofMillis(Long.parseLong(protocolConnectTimeoutString));
+        } else {
+            protocolConnectTimeout = Duration.ofSeconds(30);
+        }
+
+        int protocolMaxSendBufferSize;
+        if (protocolMaxSendBufferSizeString != null) {
+            protocolMaxSendBufferSize = Integer.parseInt(protocolMaxSendBufferSizeString);
+        } else {
+            protocolMaxSendBufferSize = 0;
+        }
+
+        Duration protocolEnqueueTimeout;
+        if (protocolEnqueueTimeoutString != null) {
+            protocolEnqueueTimeout = Duration.ofMillis(Long.parseLong(protocolEnqueueTimeoutString));
+        } else {
+            protocolEnqueueTimeout = Duration.ofSeconds(30);
+        }
+
+        Duration protocolDequeueTimeout;
+        if (protocolDequeueTimeoutString != null) {
+            protocolDequeueTimeout = Duration.ofMillis(Long.parseLong(protocolDequeueTimeoutString));
+        } else {
+            protocolDequeueTimeout = Duration.ofSeconds(30);
+        }
+
+        Duration protocolReceiveResponseTimeout;
+        if (protocolReceiveResponseTimeoutString != null) {
+            protocolReceiveResponseTimeout = Duration.ofMillis(Long.parseLong(protocolReceiveResponseTimeoutString));
+        } else {
+            protocolReceiveResponseTimeout = Duration.ofSeconds(30);
+        }
+
+        int protocolRetryCount;
+        if (protocolRetryCountString != null) {
+            protocolRetryCount = Integer.parseInt(protocolRetryCountString);
+        } else {
+            protocolRetryCount = 3;
+        }
+
+        int protocolNumberOfDispatchers;
+        if (protocolNumberOfDispatchersString != null) {
+            protocolNumberOfDispatchers = Integer.parseInt(protocolNumberOfDispatchersString);
+        } else {
+            protocolNumberOfDispatchers = 1;
+        }
+
         return new SdkConfigurationImpl(username,
                 password,
                 host,
@@ -232,7 +419,30 @@ public final class PropertiesToSettingsMapper {
                 keycloakUsername,
                 keycloakPassword,
                 keycloakSecret,
-                mtsClientApiHost);
+                mtsClientApiHost,
+                useWebSocket,
+                authServer,
+                authClientId,
+                authClientSecret,
+                authAudience,
+                authRequestTimeout,
+                authRetryDelay,
+                wsServer,
+                wsReconnectTimeout,
+                wsFetchMessageTimeout,
+                wsSendMessageTimeout,
+                wsReceiveMessageTimeout,
+                wsConsumerGraceTimeout,
+                wsRefreshConnectionTimeout,
+                wsNumberOfConnections,
+                operatorId,
+                protocolConnectTimeout,
+                protocolMaxSendBufferSize,
+                protocolEnqueueTimeout,
+                protocolDequeueTimeout,
+                protocolReceiveResponseTimeout,
+                protocolRetryCount,
+                protocolNumberOfDispatchers);
     }
 
     private static boolean isBoolean(String input) {

@@ -1,6 +1,6 @@
 package com.sportradar.mts.sdk.ws.internal.connection;
 
-import com.sportradar.mts.sdk.ws.internal.config.ImmutableConfig;
+import com.sportradar.mts.sdk.api.interfaces.SdkConfiguration;
 import com.sportradar.mts.sdk.ws.internal.connection.msg.base.WsInputMessage;
 import com.sportradar.mts.sdk.ws.internal.connection.msg.base.WsOutputMessage;
 import com.sportradar.mts.sdk.ws.internal.utils.ExcSuppress;
@@ -13,7 +13,7 @@ public class ConnectionProvider implements AutoCloseable {
     private final WebSocketConnection[] connections;
 
     public ConnectionProvider(
-            final ImmutableConfig config,
+            final SdkConfiguration config,
             final BlockingQueue<WsInputMessage> sendQueue,
             final BlockingQueue<WsOutputMessage> receiveQueue) {
         this.tokenProvider = new TokenProvider(config);

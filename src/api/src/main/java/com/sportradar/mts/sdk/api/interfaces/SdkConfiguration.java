@@ -7,6 +7,9 @@ package com.sportradar.mts.sdk.api.interfaces;
 import com.sportradar.mts.sdk.api.enums.SenderChannel;
 import com.sportradar.mts.sdk.api.enums.UfEnvironment;
 
+import java.net.URI;
+import java.time.Duration;
+
 /**
  *  Defines a contract implemented by classes representing configuration
  */
@@ -175,4 +178,55 @@ public interface SdkConfiguration {
      * @return the Client API host
      */
     String getMtsClientApiHost();
+
+    /**
+     * Gets the MTS SDK connection mode - RabbitMQ or WebSocket
+     * @return the MTS SDK connection mode
+     */
+    Boolean getUseWebSocket();
+
+    // todo dmuren add docs
+    URI getAuthServer();
+
+    String getAuthClientId();
+
+    String getAuthClientSecret();
+
+    String getAuthAudience();
+
+    Duration getAuthRequestTimeout();
+
+    Duration getAuthRetryDelay();
+
+    URI getWsServer();
+
+    Duration getWsReconnectTimeout();
+
+    Duration getWsFetchMessageTimeout();
+
+    Duration getWsSendMessageTimeout();
+
+    Duration getWsReceiveMessageTimeout();
+
+    Duration getWsConsumerGraceTimeout();
+
+    Duration getWsRefreshConnectionTimeout();
+
+    int getWsNumberOfConnections();
+
+    long getOperatorId();
+
+    Duration getProtocolConnectTimeout();
+
+    int getProtocolMaxSendBufferSize();
+
+    Duration getProtocolEnqueueTimeout();
+
+    Duration getProtocolDequeueTimeout();
+
+    Duration getProtocolReceiveResponseTimeout();
+
+    int getProtocolRetryCount();
+
+    int getProtocolNumberOfDispatchers();
 }

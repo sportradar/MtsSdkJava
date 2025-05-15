@@ -1,7 +1,7 @@
 package com.sportradar.mts.sdk.ws.entities.internal;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.sportradar.mts.sdk.ws.entities.request.ContentRequest;
+import com.sportradar.mts.sdk.api.SdkTicket;
 
 /**
  * Represents a request object used in the application.
@@ -19,7 +19,7 @@ public class Request {
     @JsonProperty("version")
     private String version;
     @JsonProperty("content")
-    private ContentRequest content;
+    private SdkTicket content;
 
     /**
      * Returns a new instance of the Request.Builder class.
@@ -125,7 +125,7 @@ public class Request {
      *
      * @return The content of the request.
      */
-    public ContentRequest getContent() {
+    public SdkTicket getContent() {
         return this.content;
     }
 
@@ -134,7 +134,7 @@ public class Request {
      *
      * @param value The content to set.
      */
-    public void setContent(ContentRequest value) {
+    public void setContent(SdkTicket value) {
         this.content = value;
     }
 
@@ -218,7 +218,7 @@ public class Request {
          * @param value The content to set.
          * @return The current instance of the Builder class.
          */
-        public Builder setContent(ContentRequest value) {
+        public Builder setContent(SdkTicket value) {
             this.instance.setContent(value);
             return this;
         }

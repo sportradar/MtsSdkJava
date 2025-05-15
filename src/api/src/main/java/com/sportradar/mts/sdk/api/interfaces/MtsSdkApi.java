@@ -40,8 +40,6 @@ public interface MtsSdkApi extends Openable {
      */
     TicketSender getTicketSender(TicketResponseListener ticketResponseListener);
 
-    TicketSenderWs getTicketSenderWs(TicketResponseListener ticketResponseListener);
-
     /**
      * Returns ticket cancel sender which can be used to send {@link TicketCancel}
      *

@@ -4,7 +4,6 @@
 
 package com.sportradar.mts.sdk.impl.libs.root;
 
-import com.sportradar.mts.sdk.api.TicketSenderWs;
 import com.sportradar.mts.sdk.api.interfaces.*;
 import com.sportradar.mts.sdk.impl.libs.adapters.amqp.AmqpMessageReceiver;
 import com.sportradar.mts.sdk.impl.libs.adapters.amqp.ChannelFactoryProvider;
@@ -27,7 +26,6 @@ public class SdkRootImpl implements SdkRoot {
     private final SdkLogger sdkLogger;
     private final ChannelFactoryProvider channelFactoryProvider;
     private final TicketHandler ticketHandler;
-    private final TicketSenderWs ticketHandlerWs;
     private final AmqpMessageReceiver ticketAmqpMessageReceiver;
     private final TicketCancelHandler ticketCancelHandler;
     private final AmqpMessageReceiver ticketCancelAmqpMessageReceiver;
@@ -44,7 +42,6 @@ public class SdkRootImpl implements SdkRoot {
                        ScheduledExecutorService executorService,
                        ChannelFactoryProvider channelFactoryProvider,
                        TicketHandler ticketHandler,
-                       TicketSenderWs ticketHandlerWs,
                        AmqpMessageReceiver ticketAmqpMessageReceiver,
                        TicketCancelHandler ticketCancelHandler,
                        AmqpMessageReceiver ticketCancelAmqpMessageReceiver,
@@ -59,7 +56,6 @@ public class SdkRootImpl implements SdkRoot {
         this.executorService = executorService;
         this.channelFactoryProvider = channelFactoryProvider;
         this.ticketHandler = ticketHandler;
-        this.ticketHandlerWs = ticketHandlerWs;
         this.ticketAmqpMessageReceiver = ticketAmqpMessageReceiver;
         this.ticketCancelHandler = ticketCancelHandler;
         this.ticketCancelAmqpMessageReceiver = ticketCancelAmqpMessageReceiver;
@@ -88,11 +84,6 @@ public class SdkRootImpl implements SdkRoot {
                 ticketHandler.close();
             } catch (Exception e) {
                 logger.error("failed to close ticket sender", e);
-            }
-            try {
-                ticketHandlerWs.close();
-            } catch (Exception e) {
-                logger.error("failed to close WS ticket sender", e);
             }
             try {
                 ticketCancelHandler.close();
@@ -180,17 +171,10 @@ public class SdkRootImpl implements SdkRoot {
         checkOpened();
         ticketHandler.setListener(responseListener);
         ticketHandler.open();
-        ticketAmqpMessageReceiver.open();
+        if (ticketHandler instanceof TicketHandlerImpl) {
+            ticketAmqpMessageReceiver.open();
+        }
         return ticketHandler;
-    }
-
-    @Override
-    public TicketSenderWs getTicketSenderWs(TicketResponseListener responseListener) {
-        checkOpened();
-        ticketHandlerWs.setListener(responseListener);
-        ticketHandlerWs.open();
-//        ticketAmqpMessageReceiver.open();
-        return ticketHandlerWs;
     }
 
     @Override

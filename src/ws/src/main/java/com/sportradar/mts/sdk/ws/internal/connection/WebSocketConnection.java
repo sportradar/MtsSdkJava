@@ -1,9 +1,8 @@
 package com.sportradar.mts.sdk.ws.internal.connection;
 
+import com.sportradar.mts.sdk.api.interfaces.SdkConfiguration;
 import com.sportradar.mts.sdk.ws.exceptions.SdkException;
 import com.sportradar.mts.sdk.ws.exceptions.WebSocketConnectionException;
-import com.sportradar.mts.sdk.ws.internal.config.ImmutableConfig;
-import com.sportradar.mts.sdk.ws.internal.config.WebSocketConnectionConfig;
 import com.sportradar.mts.sdk.ws.internal.connection.msg.*;
 import com.sportradar.mts.sdk.ws.internal.connection.msg.base.WsInputMessage;
 import com.sportradar.mts.sdk.ws.internal.connection.msg.base.WsOutputMessage;
@@ -25,7 +24,7 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class WebSocketConnection implements AutoCloseable {
 
-    private final WebSocketConnectionConfig config;
+    private final SdkConfiguration config;
     private final TokenProvider tokenProvider;
     private final BlockingQueue<WsInputMessage> sendQueue;
     private final BlockingQueue<WsOutputMessage> receiveQueue;
@@ -36,7 +35,7 @@ public class WebSocketConnection implements AutoCloseable {
     private Thread senderThread;
 
     public WebSocketConnection(
-            final ImmutableConfig config,
+            final SdkConfiguration config,
             final TokenProvider tokenProvider,
             final BlockingQueue<WsInputMessage> sendQueue,
             final BlockingQueue<WsOutputMessage> receiveQueue) {

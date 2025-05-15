@@ -1,22 +1,25 @@
 package com.sportradar.mts.sdk.ws.internal.protocol;
 
-import com.sportradar.mts.sdk.ws.entities.response.ContentResponse;
+import com.sportradar.mts.sdk.api.SdkTicket;
+import com.sportradar.mts.sdk.api.TicketResponse;
 import com.sportradar.mts.sdk.ws.exceptions.SdkException;
 import com.sportradar.mts.sdk.ws.exceptions.SdkNotConnectedException;
 import com.sportradar.mts.sdk.ws.internal.connection.msg.SendWsInputMessage;
 
 import java.util.concurrent.CompletableFuture;
 
-public class Awaiter<R extends ContentResponse> {
+public class Awaiter<T extends SdkTicket, R extends SdkTicket> {
 
     private final Class<R> responseClass;
+    private final Runnable resultListener;
     private final CompletableFuture<R> future;
 
     private String correlationId;
     private SendWsInputMessage sendWsInputMessage;
 
-    public Awaiter(final Class<R> responseClass) {
+    public Awaiter(final Class<R> responseClass, Runnable resultListener) {
         this.responseClass = responseClass;
+        this.resultListener = resultListener;
         this.future = new CompletableFuture<>();
     }
 
@@ -40,11 +43,15 @@ public class Awaiter<R extends ContentResponse> {
         this.sendWsInputMessage = sendWsInputMessage;
     }
 
-    public boolean checkResponseType(final ContentResponse response) {
+    public boolean checkResponseType(final TicketResponse response) {
         return this.responseClass.isAssignableFrom(response.getClass());
     }
 
-    public void completeSuccess(final ContentResponse response) {
+    public void notifyPublishSuccess() {
+        resultListener.run();
+    }
+
+    public void completeSuccess(final TicketResponse response) {
         this.future.complete(this.responseClass.cast(response));
     }
 

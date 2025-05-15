@@ -18,7 +18,6 @@ import com.sportradar.mts.api.rest.custombet.datamodel.CAPICalculationResponse;
 import com.sportradar.mts.api.rest.sportsapi.datamodel.MarketDescriptions;
 import com.sportradar.mts.sdk.api.AccessToken;
 import com.sportradar.mts.sdk.api.SdkTicket;
-import com.sportradar.mts.sdk.api.TicketSenderWs;
 import com.sportradar.mts.sdk.api.builders.BuilderFactory;
 import com.sportradar.mts.sdk.api.caching.MarketDescriptionCI;
 import com.sportradar.mts.sdk.api.caching.MarketDescriptionCache;
@@ -47,6 +46,7 @@ import com.sportradar.mts.sdk.impl.libs.logging.SdkLogger;
 import com.sportradar.mts.sdk.impl.libs.receivers.*;
 import com.sportradar.mts.sdk.impl.libs.root.SdkRoot;
 import com.sportradar.mts.sdk.impl.libs.root.SdkRootImpl;
+import com.sportradar.mts.sdk.ws.internal.protocol.ProtocolEngine;
 import com.sportradar.mts.sdk.impl.libs.ws.MbsSdkConfig;
 import com.sportradar.mts.sdk.impl.libs.ws.config.ImmutableConfig;
 import com.sportradar.mts.sdk.impl.libs.ws.stuff.ProtocolEngine;
@@ -63,7 +63,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -112,7 +111,6 @@ public class SdkInjectionModule extends AbstractModule {
                                   ScheduledExecutorService executorService,
                                   ChannelFactoryProvider channelFactoryProvider,
                                   TicketHandler ticketHandler,
-                                  TicketSenderWs wsTicketHandler,
                                   @TicketResponseMessageReceiverBinding AmqpMessageReceiver ticketAmqpMessageReceiver,
                                   TicketCancelHandler ticketCancelHandler,
                                   @TicketCancelResponseMessageReceiverBinding AmqpMessageReceiver ticketCancelAmqpMessageReceiver,
@@ -128,7 +126,6 @@ public class SdkInjectionModule extends AbstractModule {
                 executorService,
                 channelFactoryProvider,
                 ticketHandler,
-                wsTicketHandler,
                 ticketAmqpMessageReceiver,
                 ticketCancelHandler,
                 ticketCancelAmqpMessageReceiver,
@@ -154,50 +151,29 @@ public class SdkInjectionModule extends AbstractModule {
                                               SdkLogger sdkLogger
     ) {
         String routingKey = "node" + sdkConfiguration.getNode() + ".ticket.confirm";
-        return new TicketHandlerImpl(amqpPublisher,
-                routingKey,
-                executorService,
-                getTimeoutHandler(executorService, sdkConfiguration.getTicketResponseTimeoutLive(), sdkConfiguration.getTicketResponseTimeoutPrematch()),
-                sdkConfiguration.getTicketResponseTimeoutLive(),
-                sdkConfiguration.getTicketResponseTimeoutPrematch(),
-                sdkConfiguration.getMessagesPerSecond(),
-                sdkLogger);
-    }
 
-    @Singleton
-    @Provides
-    public TicketSenderWs provideWsTicketHandler(
-            ProtocolEngine engine,
-            ScheduledExecutorService executorService,
-            SdkLogger sdkLogger) {
-        return new TicketHandlerWsImpl( // todo dmuren mogoce pogledat config settinge v originalu
-                sdkLogger,
-                engine,
-                executorService);//,
+        if (Boolean.TRUE == sdkConfiguration.getUseWebSocket()) {
+            ProtocolEngine engine = new ProtocolEngine(
+                    sdkConfiguration,
+                    e -> {
+                        System.out.println("Unhandled exception: " + e); // todo dmuren haha
+                    });
+            return new TicketHandlerWsImpl( // todo dmuren mogoce pogledat config settinge v originalu
+                    routingKey,
+                    sdkLogger,
+                    engine,
+                    executorService);//,
 //                getTimeoutHandler(executorService, sdkConfiguration.getTicketResponseTimeoutLive(), sdkConfiguration.getTicketResponseTimeoutPrematch())); // todo dmuren reuse configs
-    }
-
-    @Singleton
-    @Provides
-    public ProtocolEngine provideEngine(MbsSdkConfig sdkConfig) { // todo dmuren mogoce bo tole za narest z new
-        final ImmutableConfig config = new ImmutableConfig(sdkConfig);
-        return new ProtocolEngine(
-                config,
-                e -> {
-                    System.out.println("Unhandled exception: " + e); // todo dmuren haha
-                });
-    }
-
-    @Singleton
-    @Provides
-    public MbsSdkConfig provideMbsSdkConfig() {
-        URI wsServer = URI.create("wss://euc1.wss-ticket.dataplane-nonprod.sportradar.dev");
-        URI authServer = URI.create("https://auth.sportradar.com/oauth/token");
-        String authClientId = "vIzVKcVxbaND3CnLbLcHNhfCJ3zlOSm6";
-        String authClientSecret = "L8k1uLhfL92tGyftuvj53n83atIAIaNIaTifzbrP0fnY5eteETvac-JK_Mkp6drq";
-        String authAudience = "mbs-dp-non-prod-wss";
-        long operatorId = 1234L;
-        return new MbsSdkConfig(wsServer, authServer, authClientId, authClientSecret, authAudience, operatorId);
+        } else {
+            return new TicketHandlerImpl(amqpPublisher,
+                    routingKey,
+                    executorService,
+                    getTimeoutHandler(executorService, sdkConfiguration.getTicketResponseTimeoutLive(), sdkConfiguration.getTicketResponseTimeoutPrematch()),
+                    sdkConfiguration.getTicketResponseTimeoutLive(),
+                    sdkConfiguration.getTicketResponseTimeoutPrematch(),
+                    sdkConfiguration.getMessagesPerSecond(),
+                    sdkLogger);
+        }
     }
 
     @Singleton
@@ -702,7 +678,6 @@ public class SdkInjectionModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(TicketSender.class).to(TicketHandler.class);
         bind(TicketResponseReceiver.class).to(TicketHandler.class);
         bind(TicketCancelSender.class).to(TicketCancelHandler.class);
         bind(TicketCancelResponseReceiver.class).to(TicketCancelHandler.class);
@@ -715,7 +690,6 @@ public class SdkInjectionModule extends AbstractModule {
 
         this.binder().bindConstant().annotatedWith(Names.named("version")).to(SdkInfo.getVersion());
     }
-
 
     /**
      * Provides the http client used to fetch data from the API

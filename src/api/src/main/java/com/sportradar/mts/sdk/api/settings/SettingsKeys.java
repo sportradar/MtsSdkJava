@@ -123,4 +123,32 @@ public final class SettingsKeys {
      * Gets the Client API host
      */
     public static final String MTS_CLIENT_API_HOST = PREFIX + "mtsClientApiHost";
+    /**
+     * Gets the use WebSocket flag
+     */
+    public static final String USE_WEB_SOCKET = PREFIX + "useWebSocket";
+
+    // todo dmuren add docs
+    public static final String AUTH_SERVER = PREFIX + "authServer";
+    public static final String AUTH_CLIENT_ID = PREFIX + "authClientId";
+    public static final String AUTH_CLIENT_SECRET = PREFIX + "authClientSecret";
+    public static final String AUTH_AUDIENCE = PREFIX + "authAudience";
+    public static final String AUTH_REQUEST_TIMEOUT = PREFIX + "authRequestTimeout";
+    public static final String AUTH_RETRY_DELAY = PREFIX + "authRetryDelay";
+    public static final String WS_SERVER = PREFIX + "wsServer";
+    public static final String WS_RECONNECT_TIMEOUT = PREFIX + "wsReconnectTimeout";
+    public static final String WS_FETCH_MESSAGE_TIMEOUT = PREFIX + "wsFetchMessageTimeout";
+    public static final String WS_SEND_MESSAGE_TIMEOUT = PREFIX + "wsSendMessageTimeout";
+    public static final String WS_RECEIVE_MESSAGE_TIMEOUT = PREFIX + "wsReceiveMessageTimeout";
+    public static final String WS_CONSUMER_GRACE_TIMEOUT = PREFIX + "wsConsumerGraceTimeout";
+    public static final String WS_REFRESH_CONNECTION_TIMEOUT = PREFIX + "wsRefreshConnectionTimeout";
+    public static final String WS_NUMBER_OF_CONNECTIONS = PREFIX + "wsNumberOfConnections";
+    public static final String OPERATOR_ID = PREFIX + "operatorId";
+    public static final String PROTOCOL_CONNECT_TIMEOUT = PREFIX + "protocolConnectTimeout";
+    public static final String PROTOCOL_MAX_SEND_BUFFER_SIZE = PREFIX + "protocolMaxSendBufferSize";
+    public static final String PROTOCOL_ENQUEUE_TIMEOUT = PREFIX + "protocolEnqueueTimeout";
+    public static final String PROTOCOL_DEQUEUE_TIMEOUT = PREFIX + "protocolDequeueTimeout";
+    public static final String PROTOCOL_RECEIVE_RESPONSE_TIMEOUT = PREFIX + "protocolReceiveResponseTimeout";
+    public static final String PROTOCOL_RETRY_COUNT = PREFIX + "protocolRetryCount";
+    public static final String PROTOCOL_NUMBER_OF_DISPATCHERS = PREFIX + "protocolNumberOfDispatchers";
 }

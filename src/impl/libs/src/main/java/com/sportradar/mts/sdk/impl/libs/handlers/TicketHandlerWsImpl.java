@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) Sportradar AG. See LICENSE for full license governing this code
+ */
+
 package com.sportradar.mts.sdk.impl.libs.handlers;
 
 import com.sportradar.mts.sdk.api.Ticket;
@@ -20,19 +24,21 @@ import java.util.concurrent.ScheduledExecutorService;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
-public class TicketHandlerWsImpl implements TicketSenderWs {
+public class TicketHandlerWsImpl implements TicketHandler {
 
+    private final String routingKey;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final SdkLogger sdkLogger;
 
     private final ProtocolEngine engine;
     private final ScheduledExecutorService executorService;
-    private TicketResponseListener ticketResponseListener; // todo dmuren not really used but should be?
+    private TicketResponseListener ticketResponseListener;
 
     private final Object stateLock = new Object();
     private boolean opened;
 
-    public TicketHandlerWsImpl(SdkLogger sdkLogger, ProtocolEngine engine, ScheduledExecutorService executorService) {
+    public TicketHandlerWsImpl(String routingKey, SdkLogger sdkLogger, ProtocolEngine engine, ScheduledExecutorService executorService) {
+        this.routingKey = routingKey;
         this.sdkLogger = sdkLogger;
         this.engine = engine;
         this.executorService = executorService;
@@ -78,7 +84,7 @@ public class TicketHandlerWsImpl implements TicketSenderWs {
      */
     @Override
     public TicketResponse sendBlocking(Ticket ticket) throws ResponseTimeoutException {
-        return sendAsync(ticket).join(); // todo dmuren get?
+        return sendAsync(ticket).join();
     }
 
     private CompletableFuture<TicketResponse> sendAsync(Ticket ticket) {
@@ -97,17 +103,16 @@ public class TicketHandlerWsImpl implements TicketSenderWs {
         if (StringUtils.isNullOrEmpty(ticket.getCorrelationId())) {
             logger.warn("Ticket {} is missing correlationId", ticket.getTicketId());
         }
-        return engine.executeOtherStuff(ticket, TicketResponse.class)
-                .handle((response, throwable) -> {
+        return engine.execute(routingKey, ticket, TicketResponse.class, () -> ticketResponseListener.publishSuccess(ticket))
+                .handle((response, throwable) -> { // todo dmuren double check logic
                     if (throwable instanceof ProtocolTimeoutException) {
                         ticketResponseListener.onTicketResponseTimedOut(ticket);
                     } else if (throwable != null) {
-//                        onPublishFailure(ticket.getCorrelationId()); // todo dmuren ne cist tko
-                        // todo dmuren both publish failures and error responses trigger this
+                        ticketResponseListener.publishFailure(ticket);
                     } else if (response != null) {
                         ticketResponseReceived(response);
                     }
-                    return null; // todo dmuren what does this mean?
+                    throw new IllegalStateException("Unhandled response!");
                 });
     }
 

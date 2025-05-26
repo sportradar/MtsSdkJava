@@ -1,7 +1,6 @@
 package com.sportradar.mts.sdk.ws.internal.protocol;
 
 import com.sportradar.mts.sdk.api.SdkTicket;
-import com.sportradar.mts.sdk.api.TicketResponse;
 import com.sportradar.mts.sdk.ws.exceptions.SdkException;
 import com.sportradar.mts.sdk.ws.exceptions.SdkNotConnectedException;
 import com.sportradar.mts.sdk.ws.internal.connection.msg.SendWsInputMessage;
@@ -43,7 +42,7 @@ public class Awaiter<T extends SdkTicket, R extends SdkTicket> {
         this.sendWsInputMessage = sendWsInputMessage;
     }
 
-    public boolean checkResponseType(final TicketResponse response) {
+    public boolean checkResponseType(final SdkTicket response) {
         return this.responseClass.isAssignableFrom(response.getClass());
     }
 
@@ -51,7 +50,7 @@ public class Awaiter<T extends SdkTicket, R extends SdkTicket> {
         resultListener.run();
     }
 
-    public void completeSuccess(final TicketResponse response) {
+    public void completeSuccess(final SdkTicket response) {
         this.future.complete(this.responseClass.cast(response));
     }
 

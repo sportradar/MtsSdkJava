@@ -182,7 +182,9 @@ public class SdkRootImpl implements SdkRoot {
         checkOpened();
         ticketCancelHandler.setListener(responseListener);
         ticketCancelHandler.open();
-        ticketCancelAmqpMessageReceiver.open();
+        if (ticketCancelHandler instanceof TicketCancelHandlerImpl) {
+            ticketCancelAmqpMessageReceiver.open();
+        }
         return ticketCancelHandler;
     }
 

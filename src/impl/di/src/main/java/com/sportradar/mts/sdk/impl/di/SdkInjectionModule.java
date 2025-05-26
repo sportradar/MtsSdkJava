@@ -146,18 +146,24 @@ public class SdkInjectionModule extends AbstractModule {
 
     @Singleton
     @Provides
+    public ProtocolEngine provideProtocolEngine() {
+        return new ProtocolEngine(
+                sdkConfiguration,
+                e -> {
+                    e.printStackTrace(); // todo dmuren sad!
+                });
+    }
+    @Singleton
+    @Provides
     public TicketHandler provideTicketHandler(@TicketPublisherBinding AmqpPublisher amqpPublisher,
+                                              ProtocolEngine engine,
                                               ScheduledExecutorService executorService,
                                               SdkLogger sdkLogger
     ) {
-        String routingKey = "node" + sdkConfiguration.getNode() + ".ticket.confirm";
+//        String routingKey = "node" + sdkConfiguration.getNode() + ".ticket.confirm"; // todo dmuren routing key magic
+        String routingKey = "ticket";
 
         if (Boolean.TRUE == sdkConfiguration.getUseWebSocket()) {
-            ProtocolEngine engine = new ProtocolEngine(
-                    sdkConfiguration,
-                    e -> {
-                        System.out.println("Unhandled exception: " + e); // todo dmuren haha
-                    });
             return new TicketHandlerWsImpl( // todo dmuren mogoce pogledat config settinge v originalu
                     routingKey,
                     sdkLogger,
@@ -178,20 +184,31 @@ public class SdkInjectionModule extends AbstractModule {
 
     @Singleton
     @Provides
-    public TicketCancelHandler provideTicketSender(@TicketCancelPublisherBinding AmqpPublisher amqpPublisher,
-                                                   ScheduledExecutorService executorService,
-                                                   SdkLogger sdkLogger
-    ) {
+    public TicketCancelHandler provideTicketCancelSender(
+            @TicketCancelPublisherBinding AmqpPublisher amqpPublisher,
+            ProtocolEngine engine,
+            ScheduledExecutorService executorService,
+            SdkLogger sdkLogger) {
         String routingKey = "cancel";
         String replyRoutingKey = "node" + sdkConfiguration.getNode() + ".cancel.confirm";
-        return new TicketCancelHandlerImpl(amqpPublisher,
-                routingKey,
-                replyRoutingKey,
-                executorService,
-                getTimeoutHandler(executorService, sdkConfiguration.getTicketCancellationResponseTimeout(), sdkConfiguration.getTicketCancellationResponseTimeout()),
-                sdkConfiguration.getTicketCancellationResponseTimeout(),
-                sdkConfiguration.getMessagesPerSecond(),
-                sdkLogger);
+        if (Boolean.TRUE == sdkConfiguration.getUseWebSocket()) {
+           return new TicketCancelHandlerWsImpl(
+                   routingKey,
+                   replyRoutingKey,
+                   engine,
+                   executorService,
+                   sdkConfiguration.getTicketCancellationResponseTimeout(),
+                   sdkLogger);
+        } else {
+            return new TicketCancelHandlerImpl(amqpPublisher,
+                    routingKey,
+                    replyRoutingKey,
+                    executorService,
+                    getTimeoutHandler(executorService, sdkConfiguration.getTicketCancellationResponseTimeout(), sdkConfiguration.getTicketCancellationResponseTimeout()),
+                    sdkConfiguration.getTicketCancellationResponseTimeout(),
+                    sdkConfiguration.getMessagesPerSecond(),
+                    sdkLogger);
+        }
     }
 
     @Singleton

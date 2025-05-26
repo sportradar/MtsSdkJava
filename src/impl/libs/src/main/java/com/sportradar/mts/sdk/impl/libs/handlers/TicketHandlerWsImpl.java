@@ -37,7 +37,11 @@ public class TicketHandlerWsImpl implements TicketHandler {
     private final Object stateLock = new Object();
     private boolean opened;
 
-    public TicketHandlerWsImpl(String routingKey, SdkLogger sdkLogger, ProtocolEngine engine, ScheduledExecutorService executorService) {
+    public TicketHandlerWsImpl(
+            String routingKey,
+            SdkLogger sdkLogger,
+            ProtocolEngine engine,
+            ScheduledExecutorService executorService) {
         this.routingKey = routingKey;
         this.sdkLogger = sdkLogger;
         this.engine = engine;
@@ -98,6 +102,7 @@ public class TicketHandlerWsImpl implements TicketHandler {
                 ticket.getCorrelationId()
         );
         logger.trace("PUBLISH {}", ticket.getJsonValue());
+        logger.debug("WS SEND ticket correlationId: {}", ticket.getCorrelationId()); // todo dmuren logging
         String msgString = ticket.getJsonValue();
         sdkLogger.logSendMessage(msgString);
         if (StringUtils.isNullOrEmpty(ticket.getCorrelationId())) {
@@ -126,6 +131,7 @@ public class TicketHandlerWsImpl implements TicketHandler {
     public void ticketResponseReceived(TicketResponse ticketResponse) {
         checkNotNull(ticketResponse, "ticketResponse cannot be null");
         sdkLogger.logReceivedMessage(JsonUtils.serializeAsString(ticketResponse));
+        logger.debug("WS RECEIVED ticket correlationId: {}", ticketResponse.getCorrelationId()); // todo dmuren logging
 
         executorService.submit(() -> {
             try {

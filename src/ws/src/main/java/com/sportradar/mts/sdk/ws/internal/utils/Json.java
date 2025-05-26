@@ -6,8 +6,8 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sportradar.mts.sdk.ws.entities.internal.Request;
-import com.sportradar.mts.sdk.ws.entities.internal.Response;
+import com.sportradar.mts.sdk.api.ws.Request;
+import com.sportradar.mts.sdk.api.ws.Response;
 import com.sportradar.mts.sdk.ws.internal.connection.AuthResponse;
 
 import java.math.BigDecimal;

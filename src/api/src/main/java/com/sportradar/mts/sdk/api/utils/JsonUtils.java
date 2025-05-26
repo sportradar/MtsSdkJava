@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.sportradar.mts.sdk.api.*;
 import com.sportradar.mts.sdk.api.exceptions.MtsSdkProcessException;
 import com.sportradar.mts.sdk.api.impl.*;
+import com.sportradar.mts.sdk.api.ws.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +45,7 @@ public final class JsonUtils {
         OBJECT_MAPPER.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
         SimpleModule module = new SimpleModule("MtsSdk");
+        module.addDeserializer(Response.class, new ResponseDeserializer()); // todo dmuren
         SimpleAbstractTypeResolver resolver = new SimpleAbstractTypeResolver();
         resolver.addMapping(BetBonus.class, BetBonusImpl.class);
         resolver.addMapping(BetCancel.class, BetCancelImpl.class);

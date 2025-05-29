@@ -190,7 +190,6 @@ public class SdkInjectionModule extends AbstractModule {
         if (Boolean.TRUE == sdkConfiguration.getUseWebSocket()) {
            return new TicketCancelHandlerWsImpl( // todo dmuren reply routing key is unnecessary
                    "cancel",
-                   "cancel.confirm",
                    engine,
                    executorService,
                    sdkConfiguration.getTicketCancellationResponseTimeout(),

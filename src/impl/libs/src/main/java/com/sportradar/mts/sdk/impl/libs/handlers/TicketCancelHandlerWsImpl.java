@@ -33,15 +33,13 @@ public class TicketCancelHandlerWsImpl implements TicketCancelHandler {
     private final ExecutorService executorService;
     private TicketCancelResponseListener ticketCancelResponseListener;
 
-    private final int responseTimeout;
-    private final String replyRoutingKey;
+    private final int responseTimeout; // todo dmuren
 
     private final Object stateLock = new Object();
     private boolean opened;
 
     @SuppressWarnings("java:S107") // Methods should not have too many parameters
     public TicketCancelHandlerWsImpl(String routingKey,
-                                     String replyRoutingKey,
                                      ProtocolEngine engine,
                                      ExecutorService executorService,
                                      int responseTimeout,
@@ -52,7 +50,6 @@ public class TicketCancelHandlerWsImpl implements TicketCancelHandler {
 
         this.executorService = executorService;
         this.routingKey = routingKey == null ? "cancel" : routingKey;
-        this.replyRoutingKey = replyRoutingKey;
         this.responseTimeout = responseTimeout;
 
         this.sdkLogger = sdkLogger;
@@ -97,8 +94,7 @@ public class TicketCancelHandlerWsImpl implements TicketCancelHandler {
         logger.trace("PUBLISH ticket:{}, correlationId:{}, routingKey:{}, replyRoutingKey:{}",
                 ticket.getTicketId(),
                 ticket.getCorrelationId(),
-                routingKey,
-                replyRoutingKey);
+                routingKey);
         logger.trace("PUBLISH {}", ticket.getJsonValue());
         logger.debug("WS SEND ticket correlationId: {}", ticket.getCorrelationId()); // todo dmuren logging
         String msgString = ticket.getJsonValue();

@@ -22,7 +22,6 @@ import java.util.function.Consumer;
 
 import static com.sportradar.mts.sdk.ws.internal.utils.Delayer.delay;
 import static com.sportradar.mts.sdk.ws.internal.utils.ExcSuppress.threadJoin;
-import static com.sportradar.mts.sdk.ws.internal.utils.TimeUtils.nowUtcMillis;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class ProtocolEngine implements AutoCloseable {
@@ -95,9 +94,7 @@ public class ProtocolEngine implements AutoCloseable {
             final Request request = new Request();
             request.setContent(content);
             request.setOperation(operation);
-            request.setVersion("2.4");
             request.setOperatorId(sdkConfiguration.getOperatorId());
-            request.setTimestampUtc(nowUtcMillis());
 
             final List<ByteBuffer> frames = createFrames(request);
             final SendWsInputMessage msg = new SendWsInputMessage(correlationId, frames);

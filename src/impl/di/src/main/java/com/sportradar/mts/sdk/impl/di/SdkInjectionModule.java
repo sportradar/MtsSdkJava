@@ -160,17 +160,15 @@ public class SdkInjectionModule extends AbstractModule {
                                               ScheduledExecutorService executorService,
                                               SdkLogger sdkLogger
     ) {
-//        String routingKey = "node" + sdkConfiguration.getNode() + ".ticket.confirm"; // todo dmuren routing key magic
-        String routingKey = "ticket";
-
         if (Boolean.TRUE == sdkConfiguration.getUseWebSocket()) {
             return new TicketHandlerWsImpl( // todo dmuren mogoce pogledat config settinge v originalu
-                    routingKey,
+                    "ticket.confirm",
                     sdkLogger,
                     engine,
                     executorService);//,
 //                getTimeoutHandler(executorService, sdkConfiguration.getTicketResponseTimeoutLive(), sdkConfiguration.getTicketResponseTimeoutPrematch())); // todo dmuren reuse configs
         } else {
+            String routingKey = "node" + sdkConfiguration.getNode() + ".ticket.confirm";
             return new TicketHandlerImpl(amqpPublisher,
                     routingKey,
                     executorService,
@@ -189,17 +187,17 @@ public class SdkInjectionModule extends AbstractModule {
             ProtocolEngine engine,
             ScheduledExecutorService executorService,
             SdkLogger sdkLogger) {
-        String routingKey = "cancel";
-        String replyRoutingKey = "node" + sdkConfiguration.getNode() + ".cancel.confirm";
         if (Boolean.TRUE == sdkConfiguration.getUseWebSocket()) {
-           return new TicketCancelHandlerWsImpl(
-                   routingKey,
-                   replyRoutingKey,
+           return new TicketCancelHandlerWsImpl( // todo dmuren reply routing key is unnecessary
+                   "cancel",
+                   "cancel.confirm",
                    engine,
                    executorService,
                    sdkConfiguration.getTicketCancellationResponseTimeout(),
                    sdkLogger);
         } else {
+            String routingKey = "cancel";
+            String replyRoutingKey = "node" + sdkConfiguration.getNode() + ".cancel.confirm";
             return new TicketCancelHandlerImpl(amqpPublisher,
                     routingKey,
                     replyRoutingKey,

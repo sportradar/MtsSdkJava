@@ -1,6 +1,7 @@
 package com.sportradar.mts.sdk.api.ws;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.sportradar.mts.sdk.api.SdkTicket;
 
 /**
@@ -8,15 +9,11 @@ import com.sportradar.mts.sdk.api.SdkTicket;
  */
 public class Request {
 
-    @JsonProperty("timestampUtc")
-    private long timestampUtc;
     @JsonProperty("operatorId")
     private long operatorId;
     @JsonProperty("operation")
     private String operation;
-    @JsonProperty("version")
-    private String version;
-    @JsonProperty("content")
+    @JsonUnwrapped
     private SdkTicket content;
 
     /**
@@ -26,24 +23,6 @@ public class Request {
      */
     public static Builder newBuilder() {
         return new Builder();
-    }
-
-    /**
-     * Gets the UTC millis timestamp of the request.
-     *
-     * @return The UTC millis timestamp of the request.
-     */
-    public long getTimestampUtc() {
-        return this.timestampUtc;
-    }
-
-    /**
-     * Sets the UTC millis timestamp of the request.
-     *
-     * @param value The UTC millis timestamp to set.
-     */
-    public void setTimestampUtc(long value) {
-        this.timestampUtc = value;
     }
 
     /**
@@ -80,24 +59,6 @@ public class Request {
      */
     public void setOperation(String value) {
         this.operation = value;
-    }
-
-    /**
-     * Gets the version of the request.
-     *
-     * @return The version of the request.
-     */
-    public String getVersion() {
-        return this.version;
-    }
-
-    /**
-     * Sets the version of the request.
-     *
-     * @param value The version to set.
-     */
-    public void setVersion(String value) {
-        this.version = value;
     }
 
     /**
@@ -138,17 +99,6 @@ public class Request {
         }
 
         /**
-         * Sets the UTC millis timestamp of the request being built.
-         *
-         * @param value The UTC millis timestamp to set.
-         * @return The current instance of the Builder class.
-         */
-        public Builder setTimestampUtc(long value) {
-            this.instance.setTimestampUtc(value);
-            return this;
-        }
-
-        /**
          * Sets the operator ID of the request being built.
          *
          * @param value The operator ID to set.
@@ -167,17 +117,6 @@ public class Request {
          */
         public Builder setOperation(String value) {
             this.instance.setOperation(value);
-            return this;
-        }
-
-        /**
-         * Sets the version of the request being built.
-         *
-         * @param value The version to set.
-         * @return The current instance of the Builder class.
-         */
-        public Builder setVersion(String value) {
-            this.instance.setVersion(value);
             return this;
         }
 

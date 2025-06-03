@@ -92,9 +92,10 @@ public class ProtocolEngine implements AutoCloseable {
             correlationId = awaiter.getCorrelationId();
 
             final Request request = new Request();
-            request.setContent(content);
+            request.setContent(content.getJsonValue());
             request.setOperation(operation);
             request.setOperatorId(sdkConfiguration.getOperatorId());
+            request.setCorrelationId(correlationId);
 
             final List<ByteBuffer> frames = createFrames(request);
             final SendWsInputMessage msg = new SendWsInputMessage(correlationId, frames);
@@ -134,6 +135,8 @@ public class ProtocolEngine implements AutoCloseable {
 
     private List<ByteBuffer> createFrames(final Request request) {
         final String json = JsonUtils.serializeAsString(request);
+        System.out.println("Request JSON: \n" + json);
+        System.out.println();
         final byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
         if (bytes.length > MAX_MSG_SIZE) {
             throw new ProtocolMessageTooBigException();
@@ -219,24 +222,17 @@ public class ProtocolEngine implements AutoCloseable {
     private void handleReceivedContentWsOutputMessage(final ReceivedContentWsOutputMessage msg) {
         try {
             Response<?> response = JsonUtils.deserialize(msg.getContent(), Response.class);
-            if (response.getContent().getCorrelationId() == null) {
+            if (response.getCorrelationId() == null) {
                 handleException(new ProtocolInvalidResponseException("Missing CorrelationId: " + msg.getContent()));
                 return;
             }
 
-            if (responseReceived(response.getContent().getCorrelationId(), response)) return;
-
-//            if (response.getContent() instanceof ErrorResponse) { // todo dmuren
-//                ErrorResponse error = (ErrorResponse) response.getContent();
-//                final ServerErrorResponseException sdkException = new ServerErrorResponseException(
-//                        error.getErrorCode(), error.getErrorMessage());
-//                if (responseReceived(response.getCorrelationId(), sdkException)) return;
-//            }
+            if (responseReceived(response.getCorrelationId(), response)) return;
 
             final ProtocolInvalidResponseException invalidResponseException =
                     new ProtocolInvalidResponseException("Invalid response: " + msg.getContent());
 
-            if (responseReceived(response.getContent().getCorrelationId(), invalidResponseException)) return;
+            if (responseReceived(response.getCorrelationId(), invalidResponseException)) return;
 
             handleException(invalidResponseException);
         } catch (final Exception e) {

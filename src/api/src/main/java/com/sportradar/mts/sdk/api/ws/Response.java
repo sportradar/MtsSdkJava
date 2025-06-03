@@ -1,39 +1,27 @@
 package com.sportradar.mts.sdk.api.ws;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sportradar.mts.sdk.api.SdkTicket;
-import com.sportradar.mts.sdk.api.TicketResponse;
+
+import java.util.Map;
 
 /**
  * Represents a response object used in the application.
  */
 public class Response<T extends SdkTicket> {
 
-    @JsonProperty("timestampUtc")
-    private long timestampUtc;
-    @JsonProperty("operation")
-    private String operation;
-    @JsonProperty("version")
-    private String version;
-    @JsonProperty("content")
     private T content;
-
-    /**
-     * Returns a new instance of the Response.Builder class.
-     *
-     * @return A new instance of the Response.Builder class.
-     */
-    public static Builder newBuilder() {
-        return new Builder();
-    }
+    private Class<T> contentClass;
+    private String operation;
+    private String correlationId;
+    private Map<String, Object> additionalInfo;
 
     /**
      * Gets the UTC millis timestamp of the response.
      *
      * @return The UTC millis timestamp.
      */
-    public long getTimestampUtc() {
-        return this.timestampUtc;
+    public String getCorrelationId() {
+        return this.correlationId;
     }
 
     /**
@@ -41,8 +29,8 @@ public class Response<T extends SdkTicket> {
      *
      * @param value The UTC millis timestamp to set.
      */
-    public void setTimestampUtc(long value) {
-        this.timestampUtc = value;
+    public void setCorrelationId(String value) {
+        this.correlationId = value;
     }
 
     /**
@@ -64,24 +52,6 @@ public class Response<T extends SdkTicket> {
     }
 
     /**
-     * Gets the version of the response.
-     *
-     * @return The version.
-     */
-    public String getVersion() {
-        return this.version;
-    }
-
-    /**
-     * Sets the version of the response.
-     *
-     * @param value The version to set.
-     */
-    public void setVersion(String value) {
-        this.version = value;
-    }
-
-    /**
      * Gets the content of the response.
      *
      * @return The content.
@@ -99,67 +69,19 @@ public class Response<T extends SdkTicket> {
         this.content = value;
     }
 
-    /**
-     * Builder class for creating instances of the Response class.
-     */
-    public static class Builder {
+    public Map<String, Object> getAdditionalInfo() {
+        return additionalInfo;
+    }
 
-        private final Response instance = new Response();
+    public void setAdditionalInfo(Map<String, Object> additionalInfo) {
+        this.additionalInfo = additionalInfo;
+    }
 
-        private Builder() {
-        }
+    public Class<T> getContentClass() {
+        return contentClass;
+    }
 
-        /**
-         * Builds and returns the Response instance.
-         *
-         * @return The Response instance.
-         */
-        public Response build() {
-            return this.instance;
-        }
-
-        /**
-         * Sets the UTC millis timestamp of the response.
-         *
-         * @param value The UTC millis timestamp to set.
-         * @return The Builder instance.
-         */
-        public Builder setTimestampUtc(long value) {
-            this.instance.setTimestampUtc(value);
-            return this;
-        }
-
-        /**
-         * Sets the operation of the response.
-         *
-         * @param value The operation to set.
-         * @return The Builder instance.
-         */
-        public Builder setOperation(String value) {
-            this.instance.setOperation(value);
-            return this;
-        }
-
-        /**
-         * Sets the version of the response.
-         *
-         * @param value The version to set.
-         * @return The Builder instance.
-         */
-        public Builder setVersion(String value) {
-            this.instance.setVersion(value);
-            return this;
-        }
-
-        /**
-         * Sets the content of the response.
-         *
-         * @param value The content to set.
-         * @return The Builder instance.
-         */
-        public Builder setContent(TicketResponse value) {
-            this.instance.setContent(value);
-            return this;
-        }
+    public void setContentClass(Class<T> contentClass) {
+        this.contentClass = contentClass;
     }
 }

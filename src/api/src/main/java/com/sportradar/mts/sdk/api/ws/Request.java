@@ -1,8 +1,6 @@
 package com.sportradar.mts.sdk.api.ws;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import com.sportradar.mts.sdk.api.SdkTicket;
 
 /**
  * Represents a request object used in the application.
@@ -13,8 +11,10 @@ public class Request {
     private long operatorId;
     @JsonProperty("operation")
     private String operation;
-    @JsonUnwrapped
-    private SdkTicket content;
+    @JsonProperty("content")
+    private String content;
+    @JsonProperty("correlationId")
+    private String correlationId;
 
     /**
      * Returns a new instance of the Request.Builder class.
@@ -63,20 +63,30 @@ public class Request {
 
     /**
      * Gets the content of the request.
-     *
-     * @return The content of the request.
      */
-    public SdkTicket getContent() {
-        return this.content;
+    public String getContent() {
+        return content;
     }
 
     /**
-     * Sets the content of the request.
-     *
-     * @param value The content to set.
+     * Sets the content of the request as a string.
      */
-    public void setContent(SdkTicket value) {
-        this.content = value;
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    /**
+     * Gets the correlation ID of the request.
+     */
+    public String getCorrelationId() {
+        return correlationId;
+    }
+
+    /**
+     * Sets the correlation ID of the request.
+     */
+    public void setCorrelationId(String correlationId) {
+        this.correlationId = correlationId;
     }
 
     /**
@@ -126,8 +136,16 @@ public class Request {
          * @param value The content to set.
          * @return The current instance of the Builder class.
          */
-        public Builder setContent(SdkTicket value) {
+        public Builder setContent(String value) {
             this.instance.setContent(value);
+            return this;
+        }
+
+        /**
+         * Sets the correlation ID of the request being built.
+         */
+        public Builder setCorrelationId(String value) {
+            this.instance.setCorrelationId(value);
             return this;
         }
     }

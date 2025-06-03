@@ -161,12 +161,11 @@ public class SdkInjectionModule extends AbstractModule {
                                               SdkLogger sdkLogger
     ) {
         if (Boolean.TRUE == sdkConfiguration.getUseWebSocket()) {
-            return new TicketHandlerWsImpl( // todo dmuren mogoce pogledat config settinge v originalu
+            return new TicketHandlerWsImpl(
                     "ticket.confirm",
                     sdkLogger,
                     engine,
-                    executorService);//,
-//                getTimeoutHandler(executorService, sdkConfiguration.getTicketResponseTimeoutLive(), sdkConfiguration.getTicketResponseTimeoutPrematch())); // todo dmuren reuse configs
+                    executorService);
         } else {
             String routingKey = "node" + sdkConfiguration.getNode() + ".ticket.confirm";
             return new TicketHandlerImpl(amqpPublisher,
@@ -188,11 +187,10 @@ public class SdkInjectionModule extends AbstractModule {
             ScheduledExecutorService executorService,
             SdkLogger sdkLogger) {
         if (Boolean.TRUE == sdkConfiguration.getUseWebSocket()) {
-           return new TicketCancelHandlerWsImpl( // todo dmuren reply routing key is unnecessary
+           return new TicketCancelHandlerWsImpl(
                    "cancel",
                    engine,
                    executorService,
-                   sdkConfiguration.getTicketCancellationResponseTimeout(),
                    sdkLogger);
         } else {
             String routingKey = "cancel";

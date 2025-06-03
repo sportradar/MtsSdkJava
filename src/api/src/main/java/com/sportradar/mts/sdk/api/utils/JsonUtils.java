@@ -45,7 +45,7 @@ public final class JsonUtils {
         OBJECT_MAPPER.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
         SimpleModule module = new SimpleModule("MtsSdk");
-        module.addDeserializer(Response.class, new ResponseDeserializer()); // todo dmuren
+        module.addDeserializer(Response.class, new ResponseDeserializer<>()); // todo dmuren
         SimpleAbstractTypeResolver resolver = new SimpleAbstractTypeResolver();
         resolver.addMapping(BetBonus.class, BetBonusImpl.class);
         resolver.addMapping(BetCancel.class, BetCancelImpl.class);

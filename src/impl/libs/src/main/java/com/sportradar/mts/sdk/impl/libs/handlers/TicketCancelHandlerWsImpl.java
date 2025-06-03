@@ -33,8 +33,6 @@ public class TicketCancelHandlerWsImpl implements TicketCancelHandler {
     private final ExecutorService executorService;
     private TicketCancelResponseListener ticketCancelResponseListener;
 
-    private final int responseTimeout; // todo dmuren
-
     private final Object stateLock = new Object();
     private boolean opened;
 
@@ -42,7 +40,6 @@ public class TicketCancelHandlerWsImpl implements TicketCancelHandler {
     public TicketCancelHandlerWsImpl(String routingKey,
                                      ProtocolEngine engine,
                                      ExecutorService executorService,
-                                     int responseTimeout,
                                      SdkLogger sdkLogger) {
         this.engine = engine;
 
@@ -50,7 +47,6 @@ public class TicketCancelHandlerWsImpl implements TicketCancelHandler {
 
         this.executorService = executorService;
         this.routingKey = routingKey == null ? "cancel" : routingKey;
-        this.responseTimeout = responseTimeout;
 
         this.sdkLogger = sdkLogger;
     }
@@ -91,12 +87,11 @@ public class TicketCancelHandlerWsImpl implements TicketCancelHandler {
         checkState(isOpen(), SdkInfo.Literals.TICKET_HANDLER_SENDER_CLOSED);
         checkNotNull(ticket, SdkInfo.Literals.TICKET_HANDLER_TICKET_CANCEL_NULL);
         checkNotNull(ticketCancelResponseListener, "no response listener set");
-        logger.trace("PUBLISH ticket:{}, correlationId:{}, routingKey:{}, replyRoutingKey:{}",
+        logger.trace("PUBLISH ticketId:{}, correlationId:{}, routingKey:{}",
                 ticket.getTicketId(),
                 ticket.getCorrelationId(),
                 routingKey);
-        logger.trace("PUBLISH {}", ticket.getJsonValue());
-        logger.debug("WS SEND ticket correlationId: {}", ticket.getCorrelationId()); // todo dmuren logging
+        logger.debug("WS SEND ticket correlationId: {}", ticket.getCorrelationId());
         String msgString = ticket.getJsonValue();
         sdkLogger.logSendMessage(msgString);
         if(StringUtils.isNullOrEmpty(ticket.getCorrelationId())) {
@@ -125,7 +120,7 @@ public class TicketCancelHandlerWsImpl implements TicketCancelHandler {
     public void ticketCancelResponseReceived(TicketCancelResponse ticketCancelResponse) {
         checkNotNull(ticketCancelResponse, "ticketCancelResponse cannot be null");
         sdkLogger.logReceivedMessage(JsonUtils.serializeAsString(ticketCancelResponse));
-        logger.debug("WS RECEIVED ticket cancel correlationId: {}", ticketCancelResponse.getCorrelationId()); // todo dmuren logging
+        logger.debug("WS RECEIVED ticket cancel correlationId: {}", ticketCancelResponse.getCorrelationId());
 
         executorService.submit(() -> {
             try {

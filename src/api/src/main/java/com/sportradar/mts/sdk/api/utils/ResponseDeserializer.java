@@ -2,42 +2,79 @@ package com.sportradar.mts.sdk.api.utils;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sportradar.mts.sdk.api.SdkTicket;
-import com.sportradar.mts.sdk.api.TicketCancelResponse;
-import com.sportradar.mts.sdk.api.TicketResponse;
+import com.sportradar.mts.sdk.api.*;
+import com.sportradar.mts.sdk.api.impl.mtsdto.ticketcancelresponse.TicketCancelResponseSchema;
+import com.sportradar.mts.sdk.api.impl.mtsdto.ticketcashoutresponse.TicketCashoutResponseSchema;
+import com.sportradar.mts.sdk.api.impl.mtsdto.ticketnonsrsettle.TicketNonSrSettleResponseSchema;
+import com.sportradar.mts.sdk.api.impl.mtsdto.ticketresponse.TicketResponseSchema;
 import com.sportradar.mts.sdk.api.ws.Response;
 
 import java.io.IOException;
+import java.util.Map;
 
-public class ResponseDeserializer extends JsonDeserializer<Response<? extends SdkTicket>> {
+public class ResponseDeserializer<T extends SdkTicket> extends JsonDeserializer<Response<T>> {
     @Override
-    public Response<? extends SdkTicket> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+    public Response<T> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
         ObjectMapper mapper = (ObjectMapper) p.getCodec();
         JsonNode node = mapper.readTree(p);
 
-        String operation = node.get("operation").asText();
+        String contentString = node.has("content") && !node.get("content").isNull()
+                ? node.get("content").toString()
+                : null;
+        String operation = node.has("operation") && !node.get("operation").isNull()
+                ? node.get("operation").asText()
+                : null;
+        String correlationId = node.has("correlationId") && !node.get("correlationId").isNull()
+                ? node.get("correlationId").asText()
+                : null;
+        Map<String, Object> additionalInfo =
+                node.has("additionalInfo") && !node.get("additionalInfo").isNull()
+                        ? mapper.convertValue(node.get("additionalInfo"), new TypeReference<Map<String, Object>>() {
+                })
+                        : null;
 
-        Class<? extends SdkTicket> clazz;
+        Object r;
+        Class<T> contentClass;
         switch (operation) {
-            case "ticket":
-                clazz = TicketResponse.class;
+            case "ticket.confirm": {
+                TicketResponseSchema c = JsonUtils.deserialize(contentString, TicketResponseSchema.class);
+                r = MtsDtoMapper.map(c, correlationId, additionalInfo, contentString);
+                contentClass = (Class<T>) TicketResponse.class;
                 break;
-            case "ticketCancel":
-                clazz = TicketCancelResponse.class;
+            }
+            case "cancel": {
+                TicketCancelResponseSchema c = JsonUtils.deserialize(contentString, TicketCancelResponseSchema.class);
+                r = MtsDtoMapper.map(c, correlationId, additionalInfo, contentString);
+                contentClass = (Class<T>) TicketCancelResponse.class;
                 break;
+            }
+            case "ticket.cashout": {
+                TicketCashoutResponseSchema c = JsonUtils.deserialize(contentString, TicketCashoutResponseSchema.class);
+                r = MtsDtoMapper.map(c, correlationId, additionalInfo, contentString);
+                contentClass = (Class<T>) TicketCashoutResponse.class;
+                break;
+            }
+            case "ticket.nonsrsettle": {
+                TicketNonSrSettleResponseSchema c = JsonUtils.deserialize(contentString, TicketNonSrSettleResponseSchema.class);
+                r = MtsDtoMapper.map(c, correlationId, additionalInfo, contentString);
+                contentClass = (Class<T>) TicketNonSrSettleResponse.class;
+                break;
+            }
             default:
                 throw new IllegalArgumentException("Unknown operation: " + operation);
         }
 
-        SdkTicket content = mapper.treeToValue(node.get("content"), clazz);
-
-        Response<SdkTicket> response = new Response<>();
+        Response<T> response = new Response<>();
+        response.setContent((T) r);
         response.setOperation(operation);
-        response.setContent(content);
+        response.setCorrelationId(correlationId);
+        response.setAdditionalInfo(additionalInfo);
+        response.setContentClass(contentClass);
         return response;
 
     }

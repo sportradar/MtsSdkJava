@@ -210,15 +210,24 @@ public class SdkInjectionModule extends AbstractModule {
     @Singleton
     @Provides
     public TicketReofferCancelHandler provideTicketReofferSender(@TicketReofferCancelPublisherBinding AmqpPublisher amqpPublisher,
-                                                                 ExecutorService executorService,
+                                                                 ProtocolEngine engine,
+                                                                 ScheduledExecutorService executorService,
                                                                  SdkLogger sdkLogger
     ) {
         String routingKey = "cancel.reoffer";
-        return new TicketReofferCancelHandlerImpl(amqpPublisher,
-                routingKey,
-                executorService,
-                sdkConfiguration.getMessagesPerSecond(),
-                sdkLogger);
+        if (Boolean.TRUE == sdkConfiguration.getUseWebSocket()) {
+            return new TicketReofferCancelHandlerWsImpl(
+                    routingKey,
+                    sdkLogger,
+                    engine,
+                    executorService);
+        } else {
+            return new TicketReofferCancelHandlerImpl(amqpPublisher,
+                    routingKey,
+                    executorService,
+                    sdkConfiguration.getMessagesPerSecond(),
+                    sdkLogger);
+        }
     }
 
     @Singleton

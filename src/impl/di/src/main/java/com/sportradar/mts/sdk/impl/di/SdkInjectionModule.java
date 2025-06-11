@@ -153,6 +153,7 @@ public class SdkInjectionModule extends AbstractModule {
                     e.printStackTrace(); // todo dmuren sad!
                 });
     }
+
     @Singleton
     @Provides
     public TicketHandler provideTicketHandler(@TicketPublisherBinding AmqpPublisher amqpPublisher,
@@ -251,18 +252,27 @@ public class SdkInjectionModule extends AbstractModule {
     @Singleton
     @Provides
     public TicketCashoutHandler provideTicketCashoutHandler(@TicketCashoutPublisherBinding AmqpPublisher amqpPublisher,
+                                                            ProtocolEngine engine,
                                                             ScheduledExecutorService executorService,
                                                             SdkLogger sdkLogger) {
         String routingKey = "ticket.cashout";
-        String replyRoutingKey = "node" + sdkConfiguration.getNode() + ".ticket.cashout";
-        return new TicketCashoutHandlerImpl(amqpPublisher,
-                routingKey,
-                replyRoutingKey,
-                executorService,
-                getTimeoutHandler(executorService, sdkConfiguration.getTicketCashoutResponseTimeout(), sdkConfiguration.getTicketCashoutResponseTimeout()),
-                sdkConfiguration.getTicketCashoutResponseTimeout(),
-                sdkConfiguration.getMessagesPerSecond(),
-                sdkLogger);
+        if (Boolean.TRUE == sdkConfiguration.getUseWebSocket()) {
+            return new TicketCashoutHandlerWsImpl(
+                    routingKey,
+                    sdkLogger,
+                    engine,
+                    executorService);
+        } else {
+            String replyRoutingKey = "node" + sdkConfiguration.getNode() + ".ticket.cashout";
+            return new TicketCashoutHandlerImpl(amqpPublisher,
+                    routingKey,
+                    replyRoutingKey,
+                    executorService,
+                    getTimeoutHandler(executorService, sdkConfiguration.getTicketCashoutResponseTimeout(), sdkConfiguration.getTicketCashoutResponseTimeout()),
+                    sdkConfiguration.getTicketCashoutResponseTimeout(),
+                    sdkConfiguration.getMessagesPerSecond(),
+                    sdkLogger);
+        }
     }
 
     @Singleton

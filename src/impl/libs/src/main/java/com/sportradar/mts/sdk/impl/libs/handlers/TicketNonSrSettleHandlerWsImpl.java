@@ -92,7 +92,7 @@ public class TicketNonSrSettleHandlerWsImpl implements TicketNonSrSettleHandler 
 
     private CompletableFuture<TicketNonSrSettleResponse> sendAsync(TicketNonSrSettle ticket) {
         checkState(isOpen(), SdkInfo.Literals.TICKET_HANDLER_SENDER_CLOSED);
-        checkNotNull(ticket, SdkInfo.Literals.TICKET_HANDLER_TICKET_NULL);
+        checkNotNull(ticket, SdkInfo.Literals.TICKET_HANDLER_TICKET_NONSR_NULL);
 
         checkNotNull(ticketNonSrSettleResponseListener, "no response listener set");
         logger.trace(

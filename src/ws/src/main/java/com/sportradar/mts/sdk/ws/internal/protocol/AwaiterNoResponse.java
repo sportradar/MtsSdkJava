@@ -7,17 +7,15 @@ import com.sportradar.mts.sdk.ws.internal.connection.msg.SendWsInputMessage;
 
 import java.util.concurrent.CompletableFuture;
 
-public class Awaiter<T extends SdkTicket, R extends SdkTicket> implements AwaiterInterface<R> {
+public class AwaiterNoResponse implements AwaiterInterface<Void> {
 
-    private final Class<R> responseClass;
     private final Runnable resultListener;
-    private final CompletableFuture<R> future;
+    private final CompletableFuture<Void> future;
 
     private String correlationId;
     private SendWsInputMessage sendWsInputMessage;
 
-    public Awaiter(final Class<R> responseClass, Runnable resultListener) {
-        this.responseClass = responseClass;
+    public AwaiterNoResponse(Runnable resultListener) {
         this.resultListener = resultListener;
         this.future = new CompletableFuture<>();
     }
@@ -32,7 +30,7 @@ public class Awaiter<T extends SdkTicket, R extends SdkTicket> implements Awaite
     }
 
     @Override
-    public CompletableFuture<R> getFuture() {
+    public CompletableFuture<Void> getFuture() {
         return future;
     }
 
@@ -46,18 +44,18 @@ public class Awaiter<T extends SdkTicket, R extends SdkTicket> implements Awaite
     }
 
     @Override
-    public boolean checkResponseType(final SdkTicket response) {
-        return this.responseClass.isAssignableFrom(response.getClass());
-    }
-
-    @Override
     public void notifyPublishSuccess() {
         resultListener.run();
     }
 
     @Override
-    public void completeSuccess(final SdkTicket response) {
-        this.future.complete(this.responseClass.cast(response));
+    public boolean checkResponseType(SdkTicket content) {
+        return true;
+    }
+
+    @Override
+    public void completeSuccess(SdkTicket content) {
+        this.future.complete(null);
     }
 
     @Override

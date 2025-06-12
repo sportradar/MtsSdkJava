@@ -31,7 +31,7 @@ public class TicketAckHandlerImpl extends SenderBase<TicketAck> implements Ticke
     @Override
     public void send(TicketAck ticketAcknowledgment) {
         checkState(isOpen(), SdkInfo.Literals.TICKET_HANDLER_SENDER_CLOSED);
-        checkNotNull(ticketAcknowledgment, "TicketAcknowledgment cannot be null");
+        checkNotNull(ticketAcknowledgment, SdkInfo.Literals.TICKET_HANDLER_TICKET_ACK_NULL);
         publishAsync(ticketAcknowledgment, routingKey);
     }
 

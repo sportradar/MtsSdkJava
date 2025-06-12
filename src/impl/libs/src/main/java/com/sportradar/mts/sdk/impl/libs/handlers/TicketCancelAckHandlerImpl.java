@@ -31,7 +31,7 @@ public class TicketCancelAckHandlerImpl extends SenderBase<TicketCancelAck> impl
     @Override
     public void send(TicketCancelAck ticketCancelAck) {
         checkState(isOpen(), SdkInfo.Literals.TICKET_HANDLER_SENDER_CLOSED);
-        checkNotNull(ticketCancelAck, "TicketCancelAcknowledgment cannot be null");
+        checkNotNull(ticketCancelAck, SdkInfo.Literals.TICKET_HANDLER_TICKET_CANCEL_ACK_NULL);
         publishAsync(ticketCancelAck, routingKey);
     }
 

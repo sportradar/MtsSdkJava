@@ -233,29 +233,47 @@ public class SdkInjectionModule extends AbstractModule {
     @Singleton
     @Provides
     public TicketAckHandler provideTicketAcknowledgmentHandler(@TicketAcknowledgmentPublisherBinding AmqpPublisher amqpPublisher,
-                                                               ExecutorService executorService,
+                                                               ProtocolEngine engine,
+                                                               ScheduledExecutorService executorService,
                                                                SdkLogger sdkLogger
     ) {
         String routingKey = "ack.ticket";
-        return new TicketAckHandlerImpl(amqpPublisher,
-                routingKey,
-                executorService,
-                sdkConfiguration.getMessagesPerSecond(),
-                sdkLogger);
+        if (Boolean.TRUE == sdkConfiguration.getUseWebSocket()) {
+            return new TicketAckHandlerWsImpl(
+                    routingKey,
+                    sdkLogger,
+                    engine,
+                    executorService);
+        } else {
+            return new TicketAckHandlerImpl(amqpPublisher,
+                    routingKey,
+                    executorService,
+                    sdkConfiguration.getMessagesPerSecond(),
+                    sdkLogger);
+        }
     }
 
     @Singleton
     @Provides
     public TicketCancelAckHandler provideTicketCancelAcknowledgmentHandler(@TicketCancelAcknowledgmentPublisherBinding AmqpPublisher amqpPublisher,
-                                                                           ExecutorService executorService,
+                                                                           ProtocolEngine engine,
+                                                                           ScheduledExecutorService executorService,
                                                                            SdkLogger sdkLogger
     ) {
         String routingKey = "ack.cancel";
-        return new TicketCancelAckHandlerImpl(amqpPublisher,
-                routingKey,
-                executorService,
-                sdkConfiguration.getMessagesPerSecond(),
-                sdkLogger);
+        if (Boolean.TRUE == sdkConfiguration.getUseWebSocket()) {
+            return new TicketCancelAckHandlerWsImpl(
+                    routingKey,
+                    sdkLogger,
+                    engine,
+                    executorService);
+        } else {
+            return new TicketCancelAckHandlerImpl(amqpPublisher,
+                    routingKey,
+                    executorService,
+                    sdkConfiguration.getMessagesPerSecond(),
+                    sdkLogger);
+        }
     }
 
     @Singleton

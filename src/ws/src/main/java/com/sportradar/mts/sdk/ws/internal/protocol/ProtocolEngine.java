@@ -33,7 +33,7 @@ public class ProtocolEngine implements AutoCloseable {
     private final ConnectionProvider connectionProvider;
     private final BlockingQueue<WsInputMessage> sendQueue;
     private final BlockingQueue<WsOutputMessage> receiveQueue;
-    private final ConcurrentMap<String, Awaiter<?, ?>> correlationIdAwaiter;
+    private final ConcurrentMap<String, AwaiterInterface> correlationIdAwaiter;
     private final AtomicInteger approxRequestCount;
     private final Consumer<Exception> unhandledExceptionHandler;
 
@@ -83,7 +83,7 @@ public class ProtocolEngine implements AutoCloseable {
             final String operation,
             final T content,
             final Class<R> responseClass,
-            final Runnable publishSuccessListener) {
+            final Runnable publishSuccessListener) { // todo dmuren sam tale success se mora prestavit ven
         String correlationId = null;
         try {
             checkConnected();
@@ -114,8 +114,42 @@ public class ProtocolEngine implements AutoCloseable {
         }
     }
 
+    public <T extends SdkTicket> CompletableFuture<Void> executeNoResponse(
+            final String operation,
+            final T content,
+            final Runnable publishSuccessListener) { // todo dmuren sam tale success se mora prestavit ven
+        String correlationId = null;
+        try {
+            checkConnected();
+
+            final AwaiterNoResponse awaiter = createAwaiterNoResponse(publishSuccessListener, content.getCorrelationId());
+            correlationId = awaiter.getCorrelationId();
+
+            final Request request = new Request();
+            request.setContent(content.getJsonValue());
+            request.setOperation(operation);
+            request.setOperatorId(sdkConfiguration.getOperatorId());
+            request.setCorrelationId(correlationId);
+
+            final List<ByteBuffer> frames = createFrames(request);
+            final SendWsInputMessage msg = new SendWsInputMessage(correlationId, frames);
+            awaiter.setSendWsInputMessage(msg);
+            enqueueSendMsg(awaiter, 0);
+
+            return awaiter.getFuture();
+        } catch (final Exception exc) {
+            releaseAwaiter(correlationId);
+            final SdkException sdkException = exc instanceof SdkException
+                    ? (SdkException) exc
+                    : new ProtocolSendFailedException(exc);
+            return CompletableFuture.supplyAsync(() -> {
+                throw sdkException;
+            });
+        }
+    }
+
     private <T extends SdkTicket, R extends SdkTicket> void enqueueSendMsg(
-            final Awaiter<T, R> awaiter, final int retryCount) {
+            final AwaiterInterface awaiter, final int retryCount) {
         if (retryCount > sdkConfiguration.getProtocolRetryCount()) {
             awaiter.completeWithException(new ProtocolTimeoutException());
             releaseAwaiter(awaiter.getCorrelationId());
@@ -170,11 +204,28 @@ public class ProtocolEngine implements AutoCloseable {
         return awaiter;
     }
 
+    private <T extends SdkTicket, R extends SdkTicket> AwaiterNoResponse createAwaiterNoResponse(
+            Runnable resultListener, String correlationId) {
+        if (approxRequestCount.get() > sdkConfiguration.getProtocolMaxSendBufferSize()) {
+            throw new ProtocolSendBufferFullException();
+        }
+
+        final AwaiterNoResponse awaiter = new AwaiterNoResponse(resultListener);
+        while (true) {
+            if (correlationIdAwaiter.putIfAbsent(correlationId, awaiter) == null) {
+                awaiter.setCorrelationId(correlationId);
+                approxRequestCount.incrementAndGet();
+                break;
+            }
+        }
+        return awaiter;
+    }
+
     private void releaseAwaiter(final String correlationId) {
         if (correlationId == null) {
             return;
         }
-        final Awaiter<?, ?> awaiter = correlationIdAwaiter.remove(correlationId);
+        final AwaiterInterface awaiter = correlationIdAwaiter.remove(correlationId);
         if (awaiter == null) {
             return;
         }
@@ -215,7 +266,7 @@ public class ProtocolEngine implements AutoCloseable {
             handleException(new ProtocolInvalidResponseException("Missing CorrelationId in sent message: " + msg));
             return;
         }
-        final Awaiter<?, ?> awaiter = correlationIdAwaiter.get(msg.getCorrelationId());
+        final AwaiterInterface awaiter = correlationIdAwaiter.get(msg.getCorrelationId());
         awaiter.notifyPublishSuccess();
     }
 
@@ -264,7 +315,7 @@ public class ProtocolEngine implements AutoCloseable {
         if (correlationId == null) {
             return false;
         }
-        final Awaiter<?, ?> awaiter = correlationIdAwaiter.get(correlationId);
+        final AwaiterInterface awaiter = correlationIdAwaiter.get(correlationId);
         if (response.getContent() != null
                 && awaiter != null
                 && awaiter.checkResponseType(response.getContent())) {
@@ -279,7 +330,7 @@ public class ProtocolEngine implements AutoCloseable {
         if (correlationId == null) {
             return false;
         }
-        final Awaiter<?, ?> awaiter = correlationIdAwaiter.get(correlationId);
+        final AwaiterInterface awaiter = correlationIdAwaiter.get(correlationId);
         if (awaiter != null) {
             awaiter.completeWithException(sdkException);
             releaseAwaiter(correlationId);

@@ -4,8 +4,8 @@
 
 package com.sportradar.mts.sdk.impl.libs.handlers;
 
-import com.sportradar.mts.sdk.api.TicketReofferCancel;
-import com.sportradar.mts.sdk.api.interfaces.TicketReofferCancelResponseListener;
+import com.sportradar.mts.sdk.api.TicketCancelAck;
+import com.sportradar.mts.sdk.api.interfaces.TicketCancelAckResponseListener;
 import com.sportradar.mts.sdk.api.utils.SdkInfo;
 import com.sportradar.mts.sdk.api.utils.StringUtils;
 import com.sportradar.mts.sdk.impl.libs.logging.SdkLogger;
@@ -18,7 +18,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
-public class TicketReofferCancelHandlerWsImpl implements TicketReofferCancelHandler {
+public class TicketCancelAckHandlerWsImpl implements TicketCancelAckHandler {
 
     private final String routingKey;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -26,17 +26,17 @@ public class TicketReofferCancelHandlerWsImpl implements TicketReofferCancelHand
 
     private final ProtocolEngine engine;
     private final ScheduledExecutorService executorService;
-    private TicketReofferCancelResponseListener ticketReofferCancelResponseListener;
+    private TicketCancelAckResponseListener ticketCancelAckResponseListener;
 
     private final Object stateLock = new Object();
     private boolean opened;
 
-    public TicketReofferCancelHandlerWsImpl(
+    public TicketCancelAckHandlerWsImpl(
             String routingKey,
             SdkLogger sdkLogger,
             ProtocolEngine engine,
             ScheduledExecutorService executorService) {
-        this.routingKey = routingKey == null ? "cancel.reoffer" : routingKey;
+        this.routingKey = routingKey == null ? "ack.cancel" : routingKey;
         this.sdkLogger = sdkLogger;
         this.engine = engine;
         this.executorService = executorService;
@@ -64,39 +64,39 @@ public class TicketReofferCancelHandlerWsImpl implements TicketReofferCancelHand
     }
 
     @Override
-    public void send(TicketReofferCancel ticketReofferCancel) {
-        sendAsync(ticketReofferCancel);
+    public void send(TicketCancelAck ticketCancelAck) {
+        sendAsync(ticketCancelAck);
     }
 
-    private void sendAsync(TicketReofferCancel reofferCancel) {
+    private void sendAsync(TicketCancelAck cancelAck) {
         checkState(isOpen(), SdkInfo.Literals.TICKET_HANDLER_SENDER_CLOSED);
-        checkNotNull(reofferCancel, SdkInfo.Literals.TICKET_HANDLER_TICKET_REOFFER_CANCEL_NULL);
+        checkNotNull(cancelAck, SdkInfo.Literals.TICKET_HANDLER_TICKET_CANCEL_ACK_NULL);
 
-        checkNotNull(ticketReofferCancelResponseListener, "no response listener set");
+        checkNotNull(ticketCancelAckResponseListener, "no response listener set");
         logger.trace(
                 "PUBLISH cashout:{}, correlationId:{}",
-                reofferCancel.getTicketId(),
-                reofferCancel.getCorrelationId()
+                cancelAck.getTicketId(),
+                cancelAck.getCorrelationId()
         );
-        logger.trace("PUBLISH {}", reofferCancel.getJsonValue());
-        logger.debug("WS SEND cashout correlationId: {}", reofferCancel.getCorrelationId()); // todo dmuren logging
-        String msgString = reofferCancel.getJsonValue();
+        logger.trace("PUBLISH {}", cancelAck.getJsonValue());
+        logger.debug("WS SEND cashout correlationId: {}", cancelAck.getCorrelationId()); // todo dmuren logging
+        String msgString = cancelAck.getJsonValue();
         sdkLogger.logSendMessage(msgString);
-        if (StringUtils.isNullOrEmpty(reofferCancel.getCorrelationId())) {
-            logger.warn("Ticket {} is missing correlationId", reofferCancel.getTicketId());
+        if (StringUtils.isNullOrEmpty(cancelAck.getCorrelationId())) {
+            logger.warn("Ticket {} is missing correlationId", cancelAck.getTicketId());
         }
-        engine.execute(routingKey, reofferCancel, TicketReofferCancel.class,
-                        () -> ticketReofferCancelResponseListener.publishSuccess(reofferCancel))
+        engine.execute(routingKey, cancelAck, TicketCancelAck.class,
+                        () -> ticketCancelAckResponseListener.publishSuccess(cancelAck))
                 .whenComplete((response, throwable) -> { // todo dmuren double check logic
                     if (throwable != null) {
-                        ticketReofferCancelResponseListener.publishFailure(reofferCancel);
+                        ticketCancelAckResponseListener.publishFailure(cancelAck);
                     }
                 });
     }
 
     @Override
-    public void setListener(TicketReofferCancelResponseListener responseListener) {
+    public void setListener(TicketCancelAckResponseListener responseListener) {
         checkNotNull(responseListener, "response listener cannot be null");
-        ticketReofferCancelResponseListener = responseListener;
+        ticketCancelAckResponseListener = responseListener;
     }
 }

@@ -35,10 +35,13 @@ public final class SdkInfo {
         public static final String CONFIG_BUILDER_PARAM_ZERO = "Value must be greater than zero";
 
         public static final String TICKET_HANDLER_SENDER_CLOSED = "Sender is closed";
+        public static final String TICKET_HANDLER_TICKET_ACK_NULL = "TicketAcknowledgment cannot be null";
+        public static final String TICKET_HANDLER_TICKET_CANCEL_ACK_NULL = "TicketCancelAcknowledgment cannot be null";
         public static final String TICKET_HANDLER_TICKET_NULL = "Ticket cannot be null";
         public static final String TICKET_HANDLER_TICKET_CASHOUT_NULL = "TicketCashout cannot be null";
         public static final String TICKET_HANDLER_TICKET_CANCEL_NULL = "TicketCancel cannot be null";
         public static final String TICKET_HANDLER_TICKET_NONSR_NULL = "ticketNonSrSettle cannot be null";
+        public static final String TICKET_HANDLER_TICKET_REOFFER_CANCEL_NULL = "TicketReofferCancel cannot be null";
     }
 
     private SdkInfo() { throw new IllegalStateException("SdkInfo class"); }

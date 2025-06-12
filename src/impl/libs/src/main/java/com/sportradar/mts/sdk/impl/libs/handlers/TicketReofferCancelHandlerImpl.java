@@ -31,7 +31,7 @@ public class TicketReofferCancelHandlerImpl extends SenderBase<TicketReofferCanc
     @Override
     public void send(TicketReofferCancel ticketReofferCancel){
         checkState(isOpen(), SdkInfo.Literals.TICKET_HANDLER_SENDER_CLOSED);
-        checkNotNull(ticketReofferCancel, "TicketReofferCancel cannot be null");
+        checkNotNull(ticketReofferCancel, SdkInfo.Literals.TICKET_HANDLER_TICKET_REOFFER_CANCEL_NULL);
         publishAsync(ticketReofferCancel, routingKey);
     }
 

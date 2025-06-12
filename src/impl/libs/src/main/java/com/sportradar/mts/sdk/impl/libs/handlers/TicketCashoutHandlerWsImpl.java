@@ -108,7 +108,7 @@ public class TicketCashoutHandlerWsImpl implements TicketCashoutHandler {
             logger.warn("Ticket {} is missing correlationId", cashout.getTicketId());
         }
         return engine.execute(routingKey, cashout, TicketCashoutResponse.class, () -> ticketCashoutResponseListener.publishSuccess(cashout))
-                .handle((response, throwable) -> { // todo dmuren double check logic
+                .whenComplete((response, throwable) -> { // todo dmuren double check logic
                     if (throwable instanceof ProtocolTimeoutException) {
                         ticketCashoutResponseListener.onTicketResponseTimedOut(cashout);
                     } else if (throwable != null) {
@@ -116,7 +116,6 @@ public class TicketCashoutHandlerWsImpl implements TicketCashoutHandler {
                     } else if (response != null) {
                         ticketCashoutResponseReceived(response);
                     }
-                    throw new IllegalStateException("Unhandled response!");
                 });
     }
 

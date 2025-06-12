@@ -4,11 +4,10 @@
 
 package com.sportradar.mts.sdk.impl.libs.handlers;
 
-import com.sportradar.mts.sdk.api.Ticket;
-import com.sportradar.mts.sdk.api.TicketResponse;
-import com.sportradar.mts.sdk.api.TicketSenderWs;
+import com.sportradar.mts.sdk.api.TicketNonSrSettle;
+import com.sportradar.mts.sdk.api.TicketNonSrSettleResponse;
 import com.sportradar.mts.sdk.api.exceptions.ResponseTimeoutException;
-import com.sportradar.mts.sdk.api.interfaces.TicketResponseListener;
+import com.sportradar.mts.sdk.api.interfaces.TicketNonSrSettleResponseListener;
 import com.sportradar.mts.sdk.api.utils.JsonUtils;
 import com.sportradar.mts.sdk.api.utils.SdkInfo;
 import com.sportradar.mts.sdk.api.utils.StringUtils;
@@ -19,30 +18,30 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
-public class TicketHandlerWsImpl implements TicketHandler {
-
+public class TicketNonSrSettleHandlerWsImpl implements TicketNonSrSettleHandler {
     private final String routingKey;
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Logger logger = LoggerFactory.getLogger(TicketNonSrSettleHandlerWsImpl.class);
     private final SdkLogger sdkLogger;
 
     private final ProtocolEngine engine;
-    private final ScheduledExecutorService executorService;
-    private TicketResponseListener ticketResponseListener;
+    private final ExecutorService executorService;
+    private TicketNonSrSettleResponseListener ticketNonSrSettleResponseListener;
 
     private final Object stateLock = new Object();
     private boolean opened;
 
-    public TicketHandlerWsImpl(
+    public TicketNonSrSettleHandlerWsImpl(
             String routingKey,
             SdkLogger sdkLogger,
             ProtocolEngine engine,
             ScheduledExecutorService executorService) {
-        this.routingKey = routingKey;
+        this.routingKey = routingKey == null ? "ticket.nonsrsettle" : routingKey;
         this.sdkLogger = sdkLogger;
         this.engine = engine;
         this.executorService = executorService;
@@ -70,32 +69,32 @@ public class TicketHandlerWsImpl implements TicketHandler {
     }
 
     /**
-     * Sends the {@link Ticket} to the MTS
+     * Publishes a new {@link TicketNonSrSettle} message
      *
-     * @param ticket ticket to send
+     * @param ticket - the data from which the message will be built
      */
     @Override
-    public void send(Ticket ticket) {
+    public void send(TicketNonSrSettle ticket) {
         sendAsync(ticket);
     }
 
     /**
-     * Sends the {@link Ticket} to the MTS and returns {@link TicketResponse}
+     * Publishes a new {@link TicketNonSrSettle} message and waits for a response with the specified timeout
      *
-     * @param ticket ticket to send
-     * @return ticket response
-     * @throws ResponseTimeoutException if no response is received in time
+     * @param ticket - the data from which the message will be built
+     * @return - the cashout response from the MTS
+     * @throws ResponseTimeoutException - if the max timeout for the response has exceeded
      */
     @Override
-    public TicketResponse sendBlocking(Ticket ticket) throws ResponseTimeoutException {
+    public TicketNonSrSettleResponse sendBlocking(TicketNonSrSettle ticket) throws ResponseTimeoutException {
         return sendAsync(ticket).join();
     }
 
-    private CompletableFuture<TicketResponse> sendAsync(Ticket ticket) {
+    private CompletableFuture<TicketNonSrSettleResponse> sendAsync(TicketNonSrSettle ticket) {
         checkState(isOpen(), SdkInfo.Literals.TICKET_HANDLER_SENDER_CLOSED);
         checkNotNull(ticket, SdkInfo.Literals.TICKET_HANDLER_TICKET_NULL);
 
-        checkNotNull(ticketResponseListener, "no response listener set");
+        checkNotNull(ticketNonSrSettleResponseListener, "no response listener set");
         logger.trace(
                 "PUBLISH ticket:{}, correlationId:{}",
                 ticket.getTicketId(),
@@ -108,33 +107,33 @@ public class TicketHandlerWsImpl implements TicketHandler {
         if (StringUtils.isNullOrEmpty(ticket.getCorrelationId())) {
             logger.warn("Ticket {} is missing correlationId", ticket.getTicketId());
         }
-        return engine.execute(routingKey, ticket, TicketResponse.class, () -> ticketResponseListener.publishSuccess(ticket))
+        return engine.execute(routingKey, ticket, TicketNonSrSettleResponse.class, () -> ticketNonSrSettleResponseListener.publishSuccess(ticket))
                 .whenComplete((response, throwable) -> { // todo dmuren double check logic
                     if (throwable instanceof ProtocolTimeoutException) {
-                        ticketResponseListener.onTicketResponseTimedOut(ticket);
+                        ticketNonSrSettleResponseListener.onTicketResponseTimedOut(ticket);
                     } else if (throwable != null) {
-                        ticketResponseListener.publishFailure(ticket);
+                        ticketNonSrSettleResponseListener.publishFailure(ticket);
                     } else if (response != null) {
-                        ticketResponseReceived(response);
+                        setTicketNonSrSettleResponse(response);
                     }
                 });
     }
 
     @Override
-    public void setListener(TicketResponseListener responseListener) {
-        checkNotNull(responseListener, "responseListener cannot be null");
-        this.ticketResponseListener = responseListener;
+    public void setListener(TicketNonSrSettleResponseListener responseListener) {
+        checkNotNull(responseListener, "response listener cannot be null");
+        this.ticketNonSrSettleResponseListener = responseListener;
     }
 
     @Override
-    public void ticketResponseReceived(TicketResponse ticketResponse) {
-        checkNotNull(ticketResponse, "ticketResponse cannot be null");
-        sdkLogger.logReceivedMessage(JsonUtils.serializeAsString(ticketResponse));
-        logger.debug("WS RECEIVED ticket correlationId: {}", ticketResponse.getCorrelationId()); // todo dmuren logging
+    public void setTicketNonSrSettleResponse(TicketNonSrSettleResponse ticketNonSrSettleResponse) {
+        checkNotNull(ticketNonSrSettleResponse, "TicketNonSrSettleResponse cannot be null");
+        sdkLogger.logReceivedMessage(JsonUtils.serializeAsString(ticketNonSrSettleResponse));
+        logger.debug("WS RECEIVED ticket correlationId: {}", ticketNonSrSettleResponse.getCorrelationId()); // todo dmuren logging
 
         executorService.submit(() -> {
             try {
-                ticketResponseListener.responseReceived(ticketResponse);
+            ticketNonSrSettleResponseListener.responseReceived(ticketNonSrSettleResponse);
             } catch (Exception e) {
                 e.printStackTrace();
             }

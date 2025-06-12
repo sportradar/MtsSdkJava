@@ -98,7 +98,7 @@ public class TicketCancelHandlerWsImpl implements TicketCancelHandler {
             logger.warn("Ticket {} is missing correlationId", ticket.getTicketId());
         }
         return engine.execute(routingKey, ticket, TicketCancelResponse.class, () -> ticketCancelResponseListener.publishSuccess(ticket))
-                .handle((response, throwable) -> { // todo dmuren double check logic
+                .whenComplete((response, throwable) -> { // todo dmuren double check logic
                     if (throwable instanceof ProtocolTimeoutException) {
                         ticketCancelResponseListener.onTicketResponseTimedOut(ticket);
                     } else if (throwable != null) {
@@ -106,7 +106,6 @@ public class TicketCancelHandlerWsImpl implements TicketCancelHandler {
                     } else if (response != null) {
                         ticketCancelResponseReceived(response);
                     }
-                    throw new IllegalStateException("Unhandled response!");
                 });
     }
 

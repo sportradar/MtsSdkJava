@@ -287,18 +287,27 @@ public class SdkInjectionModule extends AbstractModule {
     @Singleton
     @Provides
     public TicketNonSrSettleHandler provideTicketNonSrSettleHandler(@TicketNonSrSettlePublisherBinding AmqpPublisher amqpPublisher,
+                                                                    ProtocolEngine engine,
                                                                     ScheduledExecutorService executorService,
                                                                     SdkLogger sdkLogger) {
         String routingKey = "ticket.nonsrsettle";
-        String replyRoutingKey = "node" + sdkConfiguration.getNode() + ".ticket.nonsrsettle";
-        return new TicketNonSrSettleHandlerImpl(amqpPublisher,
-                routingKey,
-                replyRoutingKey,
-                executorService,
-                getTimeoutHandler(executorService, sdkConfiguration.getTicketNonSrSettleResponseTimeout(), sdkConfiguration.getTicketNonSrSettleResponseTimeout()),
-                sdkConfiguration.getTicketNonSrSettleResponseTimeout(),
-                sdkConfiguration.getMessagesPerSecond(),
-                sdkLogger);
+        if (Boolean.TRUE == sdkConfiguration.getUseWebSocket()) {
+            return new TicketNonSrSettleHandlerWsImpl(
+                    routingKey,
+                    sdkLogger,
+                    engine,
+                    executorService);
+        } else {
+            String replyRoutingKey = "node" + sdkConfiguration.getNode() + ".ticket.nonsrsettle";
+            return new TicketNonSrSettleHandlerImpl(amqpPublisher,
+                    routingKey,
+                    replyRoutingKey,
+                    executorService,
+                    getTimeoutHandler(executorService, sdkConfiguration.getTicketNonSrSettleResponseTimeout(), sdkConfiguration.getTicketNonSrSettleResponseTimeout()),
+                    sdkConfiguration.getTicketNonSrSettleResponseTimeout(),
+                    sdkConfiguration.getMessagesPerSecond(),
+                    sdkLogger);
+        }
     }
 
     @Singleton

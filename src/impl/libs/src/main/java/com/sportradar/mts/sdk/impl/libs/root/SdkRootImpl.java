@@ -217,7 +217,7 @@ public class SdkRootImpl implements SdkRoot {
         checkOpened();
         ticketCashoutHandler.setListener(responseListener);
         ticketCashoutHandler.open();
-        if (ticketCancelHandler instanceof TicketCashoutHandlerImpl) {
+        if (ticketCashoutHandler instanceof TicketCashoutHandlerImpl) {
             ticketCashoutAmqpMessageReceiver.open();
         }
         return ticketCashoutHandler;
@@ -228,7 +228,9 @@ public class SdkRootImpl implements SdkRoot {
         checkOpened();
         ticketNonSrSettleHandler.setListener(responseListener);
         ticketNonSrSettleHandler.open();
-        ticketNonSrSettleAmpqMessageReceiver.open();
+        if (ticketNonSrSettleHandler instanceof TicketNonSrSettleHandlerImpl) {
+            ticketNonSrSettleAmpqMessageReceiver.open();
+        }
         return ticketNonSrSettleHandler;
     }
 

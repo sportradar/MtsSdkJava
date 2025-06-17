@@ -82,6 +82,7 @@ public class ProtocolEngine implements AutoCloseable {
     public <T extends SdkTicket, R extends SdkTicket> CompletableFuture<R> execute(
             final String operation,
             final T content,
+            final int bookmakerId,
             final Class<R> responseClass,
             final Runnable publishSuccessListener) { // todo dmuren sam tale success se mora prestavit ven
         String correlationId = null;
@@ -94,7 +95,7 @@ public class ProtocolEngine implements AutoCloseable {
             final Request request = new Request();
             request.setContent(content.getJsonValue());
             request.setOperation(operation);
-            request.setOperatorId(sdkConfiguration.getOperatorId());
+            request.setOperatorId(bookmakerId);
             request.setCorrelationId(correlationId);
 
             final List<ByteBuffer> frames = createFrames(request);
@@ -117,6 +118,7 @@ public class ProtocolEngine implements AutoCloseable {
     public <T extends SdkTicket> CompletableFuture<Void> executeNoResponse(
             final String operation,
             final T content,
+            final int bookmakerId,
             final Runnable publishSuccessListener) { // todo dmuren sam tale success se mora prestavit ven
         String correlationId = null;
         try {
@@ -128,7 +130,7 @@ public class ProtocolEngine implements AutoCloseable {
             final Request request = new Request();
             request.setContent(content.getJsonValue());
             request.setOperation(operation);
-            request.setOperatorId(sdkConfiguration.getOperatorId());
+            request.setOperatorId(bookmakerId);
             request.setCorrelationId(correlationId);
 
             final List<ByteBuffer> frames = createFrames(request);

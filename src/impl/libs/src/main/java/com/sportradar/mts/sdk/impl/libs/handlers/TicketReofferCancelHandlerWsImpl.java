@@ -85,7 +85,7 @@ public class TicketReofferCancelHandlerWsImpl implements TicketReofferCancelHand
         if (StringUtils.isNullOrEmpty(reofferCancel.getCorrelationId())) {
             logger.warn("Ticket {} is missing correlationId", reofferCancel.getTicketId());
         }
-        engine.execute(routingKey, reofferCancel, TicketReofferCancel.class,
+        engine.executeNoResponse(routingKey, reofferCancel, reofferCancel.getBookmakerId(),
                         () -> ticketReofferCancelResponseListener.publishSuccess(reofferCancel))
                 .whenComplete((response, throwable) -> { // todo dmuren double check logic
                     if (throwable != null) {

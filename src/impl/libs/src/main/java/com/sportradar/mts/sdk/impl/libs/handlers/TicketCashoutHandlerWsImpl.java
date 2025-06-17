@@ -107,7 +107,8 @@ public class TicketCashoutHandlerWsImpl implements TicketCashoutHandler {
         if (StringUtils.isNullOrEmpty(cashout.getCorrelationId())) {
             logger.warn("Ticket {} is missing correlationId", cashout.getTicketId());
         }
-        return engine.execute(routingKey, cashout, TicketCashoutResponse.class, () -> ticketCashoutResponseListener.publishSuccess(cashout))
+        return engine.execute(routingKey, cashout, cashout.getBookmakerId(), TicketCashoutResponse.class,
+                        () -> ticketCashoutResponseListener.publishSuccess(cashout))
                 .whenComplete((response, throwable) -> { // todo dmuren double check logic
                     if (throwable instanceof ProtocolTimeoutException) {
                         ticketCashoutResponseListener.onTicketResponseTimedOut(cashout);

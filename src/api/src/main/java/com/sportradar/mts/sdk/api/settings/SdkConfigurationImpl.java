@@ -63,7 +63,6 @@ public class SdkConfigurationImpl implements SdkConfiguration {
     private final Duration wsConsumerGraceTimeout;
     private final Duration wsRefreshConnectionTimeout;
     private final int wsNumberOfConnections;
-    private final long operatorId;
     private final Duration protocolConnectTimeout;
     private final int protocolMaxSendBufferSize;
     private final Duration protocolEnqueueTimeout;
@@ -115,7 +114,6 @@ public class SdkConfigurationImpl implements SdkConfiguration {
                                    Duration wsConsumerGraceTimeout,
                                    Duration wsRefreshConnectionTimeout,
                                    int wsNumberOfConnections,
-                                   long operatorId,
                                    Duration protocolConnectTimeout,
                                    int protocolMaxSendBufferSize,
                                    Duration protocolEnqueueTimeout,
@@ -176,7 +174,6 @@ public class SdkConfigurationImpl implements SdkConfiguration {
         this.wsConsumerGraceTimeout = wsConsumerGraceTimeout;
         this.wsRefreshConnectionTimeout = wsRefreshConnectionTimeout;
         this.wsNumberOfConnections = wsNumberOfConnections;
-        this.operatorId = operatorId;
         this.protocolConnectTimeout = protocolConnectTimeout;
         this.protocolMaxSendBufferSize = protocolMaxSendBufferSize;
         this.protocolEnqueueTimeout = protocolEnqueueTimeout;
@@ -243,7 +240,6 @@ public class SdkConfigurationImpl implements SdkConfiguration {
         this.wsConsumerGraceTimeout = config.getWsConsumerGraceTimeout();
         this.wsRefreshConnectionTimeout = config.getWsRefreshConnectionTimeout();
         this.wsNumberOfConnections = config.getWsNumberOfConnections();
-        this.operatorId = config.getOperatorId();
         this.protocolConnectTimeout = config.getProtocolConnectTimeout();
         this.protocolMaxSendBufferSize = config.getProtocolMaxSendBufferSize();
         this.protocolEnqueueTimeout = config.getProtocolEnqueueTimeout();
@@ -430,11 +426,6 @@ public class SdkConfigurationImpl implements SdkConfiguration {
     }
 
     @Override
-    public long getOperatorId() {
-        return operatorId;
-    }
-
-    @Override
     public Duration getProtocolConnectTimeout() {
         return protocolConnectTimeout;
     }
@@ -513,7 +504,6 @@ public class SdkConfigurationImpl implements SdkConfiguration {
                 ", wsConsumerGraceTimeout='" + wsConsumerGraceTimeout + '\'' +
                 ", wsRefreshConnectionTimeout='" + wsRefreshConnectionTimeout + '\'' +
                 ", wsNumberOfConnections='" + wsNumberOfConnections + '\'' +
-                ", operatorId='" + operatorId + '\'' +
                 ", protocolConnectTimeout='" + protocolConnectTimeout + '\'' +
                 ", protocolMaxSendBufferSize='" + protocolMaxSendBufferSize + '\'' +
                 ", protocolEnqueueTimeout='" + protocolEnqueueTimeout + '\'' +

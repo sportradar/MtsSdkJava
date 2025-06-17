@@ -214,8 +214,6 @@ public interface SdkConfiguration {
 
     int getWsNumberOfConnections();
 
-    long getOperatorId();
-
     Duration getProtocolConnectTimeout();
 
     int getProtocolMaxSendBufferSize();

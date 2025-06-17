@@ -13,6 +13,7 @@ import com.sportradar.mts.sdk.api.utils.StringUtils;
 
 import java.net.URI;
 import java.time.Duration;
+import java.util.List;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
@@ -71,7 +72,6 @@ public final class PropertiesToSettingsMapper {
         String wsConsumerGraceTimeoutString = properties.getProperty(SettingsKeys.WS_CONSUMER_GRACE_TIMEOUT);
         String wsRefreshConnectionTimeoutString = properties.getProperty(SettingsKeys.WS_REFRESH_CONNECTION_TIMEOUT);
         String wsNumberOfConnectionsString = properties.getProperty(SettingsKeys.WS_NUMBER_OF_CONNECTIONS);
-        String operatorIdString = properties.getProperty(SettingsKeys.OPERATOR_ID);
         String protocolConnectTimeoutString = properties.getProperty(SettingsKeys.PROTOCOL_CONNECT_TIMEOUT);
         String protocolMaxSendBufferSizeString = properties.getProperty(SettingsKeys.PROTOCOL_MAX_SEND_BUFFER_SIZE);
         String protocolEnqueueTimeoutString = properties.getProperty(SettingsKeys.PROTOCOL_ENQUEUE_TIMEOUT);
@@ -243,7 +243,7 @@ public final class PropertiesToSettingsMapper {
         if (authServerString != null) {
             authServer = URI.create(authServerString);
         } else {
-            authServer = URI.create(keycloakHost);
+            authServer = null;
         }
 
         String authClientId;
@@ -337,13 +337,6 @@ public final class PropertiesToSettingsMapper {
             wsNumberOfConnections = 1;
         }
 
-        long operatorId;
-        if (operatorIdString != null) {
-            operatorId = Long.parseLong(operatorIdString);
-        } else {
-            operatorId = 0;
-        }
-
         Duration protocolConnectTimeout;
         if (protocolConnectTimeoutString != null) {
             protocolConnectTimeout = Duration.ofMillis(Long.parseLong(protocolConnectTimeoutString));
@@ -435,7 +428,6 @@ public final class PropertiesToSettingsMapper {
                 wsConsumerGraceTimeout,
                 wsRefreshConnectionTimeout,
                 wsNumberOfConnections,
-                operatorId,
                 protocolConnectTimeout,
                 protocolMaxSendBufferSize,
                 protocolEnqueueTimeout,
@@ -443,6 +435,15 @@ public final class PropertiesToSettingsMapper {
                 protocolReceiveResponseTimeout,
                 protocolRetryCount,
                 protocolNumberOfDispatchers);
+    }
+
+    private static <T> T firstNonNullOrNull(List<T> objects) {
+        for (T object : objects) {
+            if (object != null) {
+                return object;
+            }
+        }
+        return null;
     }
 
     private static boolean isBoolean(String input) {

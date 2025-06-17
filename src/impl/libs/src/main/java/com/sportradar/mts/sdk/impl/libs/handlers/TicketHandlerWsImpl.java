@@ -6,7 +6,6 @@ package com.sportradar.mts.sdk.impl.libs.handlers;
 
 import com.sportradar.mts.sdk.api.Ticket;
 import com.sportradar.mts.sdk.api.TicketResponse;
-import com.sportradar.mts.sdk.api.TicketSenderWs;
 import com.sportradar.mts.sdk.api.exceptions.ResponseTimeoutException;
 import com.sportradar.mts.sdk.api.interfaces.TicketResponseListener;
 import com.sportradar.mts.sdk.api.utils.JsonUtils;
@@ -108,7 +107,8 @@ public class TicketHandlerWsImpl implements TicketHandler {
         if (StringUtils.isNullOrEmpty(ticket.getCorrelationId())) {
             logger.warn("Ticket {} is missing correlationId", ticket.getTicketId());
         }
-        return engine.execute(routingKey, ticket, TicketResponse.class, () -> ticketResponseListener.publishSuccess(ticket))
+        return engine.execute(routingKey, ticket, ticket.getSender().getBookmakerId(), TicketResponse.class,
+                        () -> ticketResponseListener.publishSuccess(ticket))
                 .whenComplete((response, throwable) -> { // todo dmuren double check logic
                     if (throwable instanceof ProtocolTimeoutException) {
                         ticketResponseListener.onTicketResponseTimedOut(ticket);

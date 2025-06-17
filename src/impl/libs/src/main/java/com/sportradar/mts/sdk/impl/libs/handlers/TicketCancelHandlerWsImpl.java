@@ -97,7 +97,8 @@ public class TicketCancelHandlerWsImpl implements TicketCancelHandler {
         if(StringUtils.isNullOrEmpty(ticket.getCorrelationId())) {
             logger.warn("Ticket {} is missing correlationId", ticket.getTicketId());
         }
-        return engine.execute(routingKey, ticket, TicketCancelResponse.class, () -> ticketCancelResponseListener.publishSuccess(ticket))
+        return engine.execute(routingKey, ticket, ticket.getBookmakerId(), TicketCancelResponse.class,
+                        () -> ticketCancelResponseListener.publishSuccess(ticket))
                 .whenComplete((response, throwable) -> { // todo dmuren double check logic
                     if (throwable instanceof ProtocolTimeoutException) {
                         ticketCancelResponseListener.onTicketResponseTimedOut(ticket);

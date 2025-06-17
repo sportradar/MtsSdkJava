@@ -107,7 +107,8 @@ public class TicketNonSrSettleHandlerWsImpl implements TicketNonSrSettleHandler 
         if (StringUtils.isNullOrEmpty(ticket.getCorrelationId())) {
             logger.warn("Ticket {} is missing correlationId", ticket.getTicketId());
         }
-        return engine.execute(routingKey, ticket, TicketNonSrSettleResponse.class, () -> ticketNonSrSettleResponseListener.publishSuccess(ticket))
+        return engine.execute(routingKey, ticket, ticket.getBookmakerId(), TicketNonSrSettleResponse.class,
+                        () -> ticketNonSrSettleResponseListener.publishSuccess(ticket))
                 .whenComplete((response, throwable) -> { // todo dmuren double check logic
                     if (throwable instanceof ProtocolTimeoutException) {
                         ticketNonSrSettleResponseListener.onTicketResponseTimedOut(ticket);

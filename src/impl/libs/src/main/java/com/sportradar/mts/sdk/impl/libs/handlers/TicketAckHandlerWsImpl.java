@@ -85,7 +85,7 @@ public class TicketAckHandlerWsImpl implements TicketAckHandler {
         if (StringUtils.isNullOrEmpty(ticketAck.getCorrelationId())) {
             logger.warn("Ticket {} is missing correlationId", ticketAck.getTicketId());
         }
-        engine.execute(routingKey, ticketAck, TicketAck.class,
+        engine.executeNoResponse(routingKey, ticketAck, ticketAck.getBookmakerId(),
                         () -> ticketAckResponseListener.publishSuccess(ticketAck))
                 .whenComplete((response, throwable) -> { // todo dmuren double check logic
                     if (throwable != null) {

@@ -128,27 +128,108 @@ public final class SettingsKeys {
      */
     public static final String USE_WEB_SOCKET = PREFIX + "useWebSocket";
 
-    // todo dmuren add docs
+    /**
+     * Gets the URI of the authorization server used for authentication
+     */
     public static final String AUTH_SERVER = PREFIX + "authServer";
+
+    /**
+     * Gets the client ID used for authentication
+     */
     public static final String AUTH_CLIENT_ID = PREFIX + "authClientId";
+
+    /**
+     * Gets the client secret used for authentication
+     */
     public static final String AUTH_CLIENT_SECRET = PREFIX + "authClientSecret";
+
+    /**
+     * Gets the audience for which the authentication token is requested
+     */
     public static final String AUTH_AUDIENCE = PREFIX + "authAudience";
+
+    /**
+     * Gets the authorization request timeout
+     */
     public static final String AUTH_REQUEST_TIMEOUT = PREFIX + "authRequestTimeout";
+
+    /**
+     * Gets the authorization retry delay
+     */
     public static final String AUTH_RETRY_DELAY = PREFIX + "authRetryDelay";
+
+    /**
+     * Gets the WebSocket server URL
+     */
     public static final String WS_SERVER = PREFIX + "wsServer";
+
+    /**
+     * Gets the WebSocket reconnect timeout
+     */
     public static final String WS_RECONNECT_TIMEOUT = PREFIX + "wsReconnectTimeout";
+
+    /**
+     * Gets the WebSocket fetch message timeout
+     */
     public static final String WS_FETCH_MESSAGE_TIMEOUT = PREFIX + "wsFetchMessageTimeout";
+
+    /**
+     * Gets the WebSocket send message timeout
+     */
     public static final String WS_SEND_MESSAGE_TIMEOUT = PREFIX + "wsSendMessageTimeout";
+
+    /**
+     * Gets the WebSocket receive message timeout
+     */
     public static final String WS_RECEIVE_MESSAGE_TIMEOUT = PREFIX + "wsReceiveMessageTimeout";
+
+    /**
+     * Gets the WebSocket consumer grace timeout
+     */
     public static final String WS_CONSUMER_GRACE_TIMEOUT = PREFIX + "wsConsumerGraceTimeout";
+
+    /**
+     * Gets the WebSocket refresh connection timeout
+     */
     public static final String WS_REFRESH_CONNECTION_TIMEOUT = PREFIX + "wsRefreshConnectionTimeout";
+
+    /**
+     * Gets the WebSocket number of connections
+     */
     public static final String WS_NUMBER_OF_CONNECTIONS = PREFIX + "wsNumberOfConnections";
-    public static final String OPERATOR_ID = PREFIX + "operatorId";
+
+    /**
+     * Gets the protocol connect timeout
+     */
     public static final String PROTOCOL_CONNECT_TIMEOUT = PREFIX + "protocolConnectTimeout";
+
+    /**
+     * Gets the protocol max send buffer size
+     */
     public static final String PROTOCOL_MAX_SEND_BUFFER_SIZE = PREFIX + "protocolMaxSendBufferSize";
+
+    /**
+     * Gets the protocol enqueue timeout
+     */
     public static final String PROTOCOL_ENQUEUE_TIMEOUT = PREFIX + "protocolEnqueueTimeout";
+
+    /**
+     * Gets the protocol dequeue timeout
+     */
     public static final String PROTOCOL_DEQUEUE_TIMEOUT = PREFIX + "protocolDequeueTimeout";
+
+    /**
+     * Gets the protocol receive response timeout
+     */
     public static final String PROTOCOL_RECEIVE_RESPONSE_TIMEOUT = PREFIX + "protocolReceiveResponseTimeout";
+
+    /**
+     * Gets the protocol retry count
+     */
     public static final String PROTOCOL_RETRY_COUNT = PREFIX + "protocolRetryCount";
+
+    /**
+     * Gets the protocol retry delay
+     */
     public static final String PROTOCOL_NUMBER_OF_DISPATCHERS = PREFIX + "protocolNumberOfDispatchers";
 }

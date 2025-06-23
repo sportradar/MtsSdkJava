@@ -12,6 +12,7 @@ import com.sportradar.mts.sdk.api.interfaces.SdkConfigurationBuilder;
 import com.sportradar.mts.sdk.api.utils.SdkInfo;
 import com.sportradar.mts.sdk.api.utils.StringUtils;
 
+import java.time.Duration;
 import java.util.Properties;
 
 public class SdkConfigurationBuilderImpl implements SdkConfigurationBuilder {
@@ -409,6 +410,206 @@ public class SdkConfigurationBuilderImpl implements SdkConfigurationBuilder {
             throw new IllegalArgumentException(SdkInfo.Literals.CONFIG_BUILDER_PARAM_EMPTY);
         }
         properties.setProperty(SettingsKeys.MTS_CLIENT_API_HOST, mtsClientApiHost);
+        return this;
+    }
+
+    @Override
+    public SdkConfigurationBuilder setUseWebSocket(boolean useWebSocket) {
+        properties.setProperty(SettingsKeys.USE_WEB_SOCKET, String.valueOf(useWebSocket));
+        return this;
+    }
+
+    @Override
+    public SdkConfigurationBuilder setAuthServer(String authServer) {
+        if(StringUtils.isNullOrEmpty(authServer))
+        {
+            throw new IllegalArgumentException(SdkInfo.Literals.CONFIG_BUILDER_PARAM_EMPTY);
+        }
+        properties.setProperty(SettingsKeys.AUTH_SERVER, authServer);
+        return this;
+    }
+
+    @Override
+    public SdkConfigurationBuilder setAuthClientId(String authClientId) {
+        if(StringUtils.isNullOrEmpty(authClientId))
+        {
+            throw new IllegalArgumentException(SdkInfo.Literals.CONFIG_BUILDER_PARAM_EMPTY);
+        }
+        properties.setProperty(SettingsKeys.AUTH_CLIENT_ID, authClientId);
+        return this;
+    }
+
+    @Override
+    public SdkConfigurationBuilder setAuthClientSecret(String authClientSecret) {
+        if(StringUtils.isNullOrEmpty(authClientSecret))
+        {
+            throw new IllegalArgumentException(SdkInfo.Literals.CONFIG_BUILDER_PARAM_EMPTY);
+        }
+        properties.setProperty(SettingsKeys.AUTH_CLIENT_SECRET, authClientSecret);
+        return this;
+    }
+
+    @Override
+    public SdkConfigurationBuilder setAuthAudience(String authAudience) {
+        if(StringUtils.isNullOrEmpty(authAudience))
+        {
+            throw new IllegalArgumentException(SdkInfo.Literals.CONFIG_BUILDER_PARAM_EMPTY);
+        }
+        properties.setProperty(SettingsKeys.AUTH_AUDIENCE, authAudience);
+        return this;
+    }
+
+    @Override
+    public SdkConfigurationBuilder setAuthRequestTimeout(Duration authRequestTimeout) {
+        if (authRequestTimeout == null)
+        {
+            throw new IllegalArgumentException(SdkInfo.Literals.CONFIG_BUILDER_PARAM_EMPTY);
+        }
+        properties.setProperty(SettingsKeys.AUTH_REQUEST_TIMEOUT, String.valueOf(authRequestTimeout));
+        return this;
+    }
+
+    @Override
+    public SdkConfigurationBuilder setAuthRetryDelay(Duration authRetryDelay) {
+        if (authRetryDelay == null)
+        {
+            throw new IllegalArgumentException(SdkInfo.Literals.CONFIG_BUILDER_PARAM_EMPTY);
+        }
+        properties.setProperty(SettingsKeys.AUTH_RETRY_DELAY, String.valueOf(authRetryDelay));
+        return this;
+    }
+
+    @Override
+    public SdkConfigurationBuilder setWsServer(String wsServer) {
+        if(StringUtils.isNullOrEmpty(wsServer))
+        {
+            throw new IllegalArgumentException(SdkInfo.Literals.CONFIG_BUILDER_PARAM_EMPTY);
+        }
+        properties.setProperty(SettingsKeys.WS_SERVER, wsServer);
+        return this;
+    }
+
+    @Override
+    public SdkConfigurationBuilder setWsReconnectTimeout(Duration wsReconnectTimeout) {
+        if (wsReconnectTimeout == null)
+        {
+            throw new IllegalArgumentException(SdkInfo.Literals.CONFIG_BUILDER_PARAM_EMPTY);
+        }
+        properties.setProperty(SettingsKeys.WS_RECONNECT_TIMEOUT, String.valueOf(wsReconnectTimeout));
+        return this;
+    }
+
+    @Override
+    public SdkConfigurationBuilder setWsFetchMessageTimeout(Duration wsFetchMessageTimeout) {
+        if (wsFetchMessageTimeout == null)
+        {
+            throw new IllegalArgumentException(SdkInfo.Literals.CONFIG_BUILDER_PARAM_EMPTY);
+        }
+        properties.setProperty(SettingsKeys.WS_FETCH_MESSAGE_TIMEOUT, String.valueOf(wsFetchMessageTimeout));
+        return this;
+    }
+
+    @Override
+    public SdkConfigurationBuilder setWsSendMessageTimeout(Duration wsSendMessageTimeout) {
+        if (wsSendMessageTimeout == null)
+        {
+            throw new IllegalArgumentException(SdkInfo.Literals.CONFIG_BUILDER_PARAM_EMPTY);
+        }
+        properties.setProperty(SettingsKeys.WS_SEND_MESSAGE_TIMEOUT, String.valueOf(wsSendMessageTimeout));
+        return this;
+    }
+
+    @Override
+    public SdkConfigurationBuilder setWsReceiveMessageTimeout(Duration wsReceiveMessageTimeout) {
+        if (wsReceiveMessageTimeout == null)
+        {
+            throw new IllegalArgumentException(SdkInfo.Literals.CONFIG_BUILDER_PARAM_EMPTY);
+        }
+        properties.setProperty(SettingsKeys.WS_RECEIVE_MESSAGE_TIMEOUT, String.valueOf(wsReceiveMessageTimeout));
+        return this;
+    }
+
+    @Override
+    public SdkConfigurationBuilder setWsConsumerGraceTimeout(Duration wsConsumerGraceTimeout) {
+        if (wsConsumerGraceTimeout == null)
+        {
+            throw new IllegalArgumentException(SdkInfo.Literals.CONFIG_BUILDER_PARAM_EMPTY);
+        }
+        properties.setProperty(SettingsKeys.WS_CONSUMER_GRACE_TIMEOUT, String.valueOf(wsConsumerGraceTimeout));
+        return this;
+    }
+
+    @Override
+    public SdkConfigurationBuilder setWsRefreshConnectionTimeout(Duration wsRefreshConnectionTimeout) {
+        if (wsRefreshConnectionTimeout == null)
+        {
+            throw new IllegalArgumentException(SdkInfo.Literals.CONFIG_BUILDER_PARAM_EMPTY);
+        }
+        properties.setProperty(SettingsKeys.WS_REFRESH_CONNECTION_TIMEOUT, String.valueOf(wsRefreshConnectionTimeout));
+        return this;
+    }
+
+    @Override
+    public SdkConfigurationBuilder setWsNumberOfConnections(int wsNumberOfConnections) {
+        properties.setProperty(SettingsKeys.WS_NUMBER_OF_CONNECTIONS, String.valueOf(wsNumberOfConnections));
+        return this;
+    }
+
+    @Override
+    public SdkConfigurationBuilder setProtocolConnectTimeout(Duration protocolConnectTimeout) {
+        if (protocolConnectTimeout == null)
+        {
+            throw new IllegalArgumentException(SdkInfo.Literals.CONFIG_BUILDER_PARAM_EMPTY);
+        }
+        properties.setProperty(SettingsKeys.PROTOCOL_CONNECT_TIMEOUT, String.valueOf(protocolConnectTimeout));
+        return this;
+    }
+
+    @Override
+    public SdkConfigurationBuilder setProtocolMaxSendBufferSize(int protocolMaxSendBufferSize) {
+        properties.setProperty(SettingsKeys.PROTOCOL_MAX_SEND_BUFFER_SIZE, String.valueOf(protocolMaxSendBufferSize));
+        return this;
+    }
+
+    @Override
+    public SdkConfigurationBuilder setProtocolEnqueueTimeout(Duration protocolEnqueueTimeout) {
+        if (protocolEnqueueTimeout == null)
+        {
+            throw new IllegalArgumentException(SdkInfo.Literals.CONFIG_BUILDER_PARAM_EMPTY);
+        }
+        properties.setProperty(SettingsKeys.PROTOCOL_ENQUEUE_TIMEOUT, String.valueOf(protocolEnqueueTimeout));
+        return this;
+    }
+
+    @Override
+    public SdkConfigurationBuilder setProtocolDequeueTimeout(Duration protocolDequeueTimeout) {
+        if (protocolDequeueTimeout == null)
+        {
+            throw new IllegalArgumentException(SdkInfo.Literals.CONFIG_BUILDER_PARAM_EMPTY);
+        }
+        properties.setProperty(SettingsKeys.PROTOCOL_DEQUEUE_TIMEOUT, String.valueOf(protocolDequeueTimeout));
+        return this;
+    }
+
+    @Override
+    public SdkConfigurationBuilder setProtocolReceiveResponseTimeout(Duration protocolReceiveResponseTimeout) {
+        if (protocolReceiveResponseTimeout == null)
+        {
+            throw new IllegalArgumentException(SdkInfo.Literals.CONFIG_BUILDER_PARAM_EMPTY);
+        }
+        properties.setProperty(SettingsKeys.PROTOCOL_RECEIVE_RESPONSE_TIMEOUT, String.valueOf(protocolReceiveResponseTimeout));
+        return this;
+    }
+
+    @Override
+    public SdkConfigurationBuilder setProtocolRetryCount(int protocolRetryCount) {
+        properties.setProperty(SettingsKeys.PROTOCOL_RETRY_COUNT, String.valueOf(protocolRetryCount));
+        return this;
+    }
+
+    @Override
+    public SdkConfigurationBuilder setProtocolNumberOfDispatchers(int protocolNumberOfDispatchers) {
+        properties.setProperty(SettingsKeys.PROTOCOL_NUMBER_OF_DISPATCHERS, String.valueOf(protocolNumberOfDispatchers));
         return this;
     }
 

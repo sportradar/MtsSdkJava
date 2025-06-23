@@ -269,14 +269,14 @@ public final class PropertiesToSettingsMapper {
 
         Duration authRequestTimeout;
         if (authRequestTimeoutString != null) {
-            authRequestTimeout = Duration.ofMillis(Long.parseLong(authRequestTimeoutString));
+            authRequestTimeout = Duration.parse(authRequestTimeoutString);
         } else {
             authRequestTimeout = Duration.ofSeconds(30);
         }
 
         Duration authRetryDelay;
         if (authRetryDelayString != null) {
-            authRetryDelay = Duration.ofMillis(Long.parseLong(authRetryDelayString));
+            authRetryDelay = Duration.parse(authRetryDelayString);
         } else {
             authRetryDelay = Duration.ofSeconds(5);
         }
@@ -290,42 +290,42 @@ public final class PropertiesToSettingsMapper {
 
         Duration wsReconnectTimeout;
         if (wsReconnectTimeoutString != null) {
-            wsReconnectTimeout = Duration.ofMillis(Long.parseLong(wsReconnectTimeoutString));
+            wsReconnectTimeout = Duration.parse(wsReconnectTimeoutString);
         } else {
             wsReconnectTimeout = Duration.ofSeconds(30);
         }
 
         Duration wsFetchMessageTimeout;
         if (wsFetchMessageTimeoutString != null) {
-            wsFetchMessageTimeout = Duration.ofMillis(Long.parseLong(wsFetchMessageTimeoutString));
+            wsFetchMessageTimeout = Duration.parse(wsFetchMessageTimeoutString);
         } else {
             wsFetchMessageTimeout = Duration.ofSeconds(30);
         }
 
         Duration wsSendMessageTimeout;
         if (wsSendMessageTimeoutString != null) {
-            wsSendMessageTimeout = Duration.ofMillis(Long.parseLong(wsSendMessageTimeoutString));
+            wsSendMessageTimeout = Duration.parse(wsSendMessageTimeoutString);
         } else {
             wsSendMessageTimeout = Duration.ofSeconds(30);
         }
 
         Duration wsReceiveMessageTimeout;
         if (wsReceiveMessageTimeoutString != null) {
-            wsReceiveMessageTimeout = Duration.ofMillis(Long.parseLong(wsReceiveMessageTimeoutString));
+            wsReceiveMessageTimeout = Duration.parse(wsReceiveMessageTimeoutString);
         } else {
             wsReceiveMessageTimeout = Duration.ofSeconds(30);
         }
 
         Duration wsConsumerGraceTimeout;
         if (wsConsumerGraceTimeoutString != null) {
-            wsConsumerGraceTimeout = Duration.ofMillis(Long.parseLong(wsConsumerGraceTimeoutString));
+            wsConsumerGraceTimeout = Duration.parse(wsConsumerGraceTimeoutString);
         } else {
             wsConsumerGraceTimeout = Duration.ofSeconds(30);
         }
 
         Duration wsRefreshConnectionTimeout;
         if (wsRefreshConnectionTimeoutString != null) {
-            wsRefreshConnectionTimeout = Duration.ofMillis(Long.parseLong(wsRefreshConnectionTimeoutString));
+            wsRefreshConnectionTimeout = Duration.parse(wsRefreshConnectionTimeoutString);
         } else {
             wsRefreshConnectionTimeout = Duration.ofSeconds(30);
         }
@@ -339,7 +339,7 @@ public final class PropertiesToSettingsMapper {
 
         Duration protocolConnectTimeout;
         if (protocolConnectTimeoutString != null) {
-            protocolConnectTimeout = Duration.ofMillis(Long.parseLong(protocolConnectTimeoutString));
+            protocolConnectTimeout = Duration.parse(protocolConnectTimeoutString);
         } else {
             protocolConnectTimeout = Duration.ofSeconds(30);
         }
@@ -353,21 +353,21 @@ public final class PropertiesToSettingsMapper {
 
         Duration protocolEnqueueTimeout;
         if (protocolEnqueueTimeoutString != null) {
-            protocolEnqueueTimeout = Duration.ofMillis(Long.parseLong(protocolEnqueueTimeoutString));
+            protocolEnqueueTimeout = Duration.parse(protocolEnqueueTimeoutString);
         } else {
             protocolEnqueueTimeout = Duration.ofSeconds(30);
         }
 
         Duration protocolDequeueTimeout;
         if (protocolDequeueTimeoutString != null) {
-            protocolDequeueTimeout = Duration.ofMillis(Long.parseLong(protocolDequeueTimeoutString));
+            protocolDequeueTimeout = Duration.parse(protocolDequeueTimeoutString);
         } else {
             protocolDequeueTimeout = Duration.ofSeconds(30);
         }
 
         Duration protocolReceiveResponseTimeout;
         if (protocolReceiveResponseTimeoutString != null) {
-            protocolReceiveResponseTimeout = Duration.ofMillis(Long.parseLong(protocolReceiveResponseTimeoutString));
+            protocolReceiveResponseTimeout = Duration.parse(protocolReceiveResponseTimeoutString);
         } else {
             protocolReceiveResponseTimeout = Duration.ofSeconds(30);
         }

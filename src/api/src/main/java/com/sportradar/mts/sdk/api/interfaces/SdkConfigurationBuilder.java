@@ -7,6 +7,8 @@ package com.sportradar.mts.sdk.api.interfaces;
 import com.sportradar.mts.sdk.api.enums.SenderChannel;
 import com.sportradar.mts.sdk.api.enums.UfEnvironment;
 
+import java.time.Duration;
+
 /**
  * Defines a contract for classes implementing builder for {@link SdkConfiguration}
  */
@@ -213,6 +215,182 @@ public interface SdkConfigurationBuilder {
      * @return {@link SdkConfigurationBuilder}
      */
     SdkConfigurationBuilder setMtsClientApiHost(String mtsClientApiHost);
+
+    /**
+     * Sets the use WebSocket flag
+     *
+     * @param useWebSocket flag value
+     * @return @link SdkConfigurationBuilder}
+     */
+    SdkConfigurationBuilder setUseWebSocket(boolean useWebSocket);
+
+    /**
+     * Sets the auth server URI
+     *
+     * @param authServer the auth server URI to be set
+     * @return {@link SdkConfigurationBuilder}
+     */
+    SdkConfigurationBuilder setAuthServer(String authServer);
+
+    /**
+     * Sets the client ID used for authentication
+     *
+     * @param authClientId the client ID to be set
+     * @return {@link SdkConfigurationBuilder}
+     */
+    SdkConfigurationBuilder setAuthClientId(String authClientId);
+
+    /**
+     * Sets the client secret used for authentication
+     *
+     * @param authClientSecret the client secret to be set
+     * @return {@link SdkConfigurationBuilder}
+     */
+    SdkConfigurationBuilder setAuthClientSecret(String authClientSecret);
+
+    /**
+     * Sets the audience for the authentication
+     *
+     * @param authAudience the audience to be set
+     * @return {@link SdkConfigurationBuilder}
+     */
+    SdkConfigurationBuilder setAuthAudience(String authAudience);
+
+    /**
+     * Sets the timeout for the authentication request
+     *
+     * @param authRequestTimeout the timeout to be set
+     * @return {@link SdkConfigurationBuilder}
+     */
+    SdkConfigurationBuilder setAuthRequestTimeout(Duration authRequestTimeout);
+
+    /**
+     * Sets the delay before retrying authentication
+     *
+     * @param authRetryDelay the delay to be set
+     * @return {@link SdkConfigurationBuilder}
+     */
+    SdkConfigurationBuilder setAuthRetryDelay(Duration authRetryDelay);
+
+    /**
+     * Sets URI of the WebSocket server used for communication
+     *
+     * @param wsServer the URI of the WebSocket server to be set
+     * @return {@link SdkConfigurationBuilder}
+     */
+    SdkConfigurationBuilder setWsServer(String wsServer);
+
+    /**
+     * Sets the WebSocket reconnect timeout
+     *
+     * @param wsReconnectTimeout the reconnect timeout to be set
+     * @return {@link SdkConfigurationBuilder}
+     */
+    SdkConfigurationBuilder setWsReconnectTimeout(Duration wsReconnectTimeout);
+
+    /**
+     * Sets the WebSocket fetch message timeout
+     *
+     * @param wsFetchMessageTimeout the fetch message timeout to be set
+     * @return {@link SdkConfigurationBuilder}
+     */
+    SdkConfigurationBuilder setWsFetchMessageTimeout(Duration wsFetchMessageTimeout);
+
+    /**
+     * Sets the WebSocket send message timeout
+     *
+     * @param wsSendMessageTimeout the send message timeout to be set
+     * @return {@link SdkConfigurationBuilder}
+     */
+    SdkConfigurationBuilder setWsSendMessageTimeout(Duration wsSendMessageTimeout);
+
+    /**
+     * Sets the WebSocket receive message timeout
+     *
+     * @param wsReceiveMessageTimeout the receive message timeout to be set
+     * @return {@link SdkConfigurationBuilder}
+     */
+    SdkConfigurationBuilder setWsReceiveMessageTimeout(Duration wsReceiveMessageTimeout);
+
+    /**
+     * Sets the WebSocket consumer grace timeout
+     *
+     * @param wsConsumerGraceTimeout the consumer grace timeout to be set
+     * @return {@link SdkConfigurationBuilder}
+     */
+    SdkConfigurationBuilder setWsConsumerGraceTimeout(Duration wsConsumerGraceTimeout);
+
+    /**
+     * Sets the WebSocket refresh connection timeout
+     *
+     * @param wsRefreshConnectionTimeout the refresh connection timeout to be set
+     * @return {@link SdkConfigurationBuilder}
+     */
+    SdkConfigurationBuilder setWsRefreshConnectionTimeout(Duration wsRefreshConnectionTimeout);
+
+    /**
+     * Sets the number of WebSocket connections
+     *
+     * @param wsNumberOfConnections the number of connections to be set
+     * @return {@link SdkConfigurationBuilder}
+     */
+    SdkConfigurationBuilder setWsNumberOfConnections(int wsNumberOfConnections);
+
+    /**
+     * Sets the protocol connect timeout
+     *
+     * @param protocolConnectTimeout the connect timeout to be set
+     * @return {@link SdkConfigurationBuilder}
+     */
+    SdkConfigurationBuilder setProtocolConnectTimeout(Duration protocolConnectTimeout);
+
+    /**
+     * Sets the protocol max send buffer size
+     *
+     * @param protocolMaxSendBufferSize the maximum send buffer size in bytes to be set
+     * @return {@link SdkConfigurationBuilder}
+     */
+    SdkConfigurationBuilder setProtocolMaxSendBufferSize(int protocolMaxSendBufferSize);
+
+    /**
+     * Sets the protocol enqueue timeout
+     *
+     * @param protocolEnqueueTimeout the protocol enqueue timeout to be set
+     * @return {@link SdkConfigurationBuilder}
+     */
+    SdkConfigurationBuilder setProtocolEnqueueTimeout(Duration protocolEnqueueTimeout);
+
+    /**
+     * Sets the protocol dequeue timeout
+     *
+     * @param protocolDequeueTimeout the protocol dequeue timeout to be set
+     * @return {@link SdkConfigurationBuilder}
+     */
+    SdkConfigurationBuilder setProtocolDequeueTimeout(Duration protocolDequeueTimeout);
+
+    /**
+     * Sets the protocol receive response timeout
+     *
+     * @param protocolReceiveResponseTimeout the protocol receive response timeout to be set
+     * @return {@link SdkConfigurationBuilder}
+     */
+    SdkConfigurationBuilder setProtocolReceiveResponseTimeout(Duration protocolReceiveResponseTimeout);
+
+    /**
+     * Sets the protocol retry count
+     *
+     * @param protocolRetryCount the protocol retry count to be set
+     * @return {@link SdkConfigurationBuilder}
+     */
+    SdkConfigurationBuilder setProtocolRetryCount(int protocolRetryCount);
+
+    /**
+     * Sets the protocol number of dispatchers
+     *
+     * @param protocolNumberOfDispatchers the number of dispatchers to be set
+     * @return {@link SdkConfigurationBuilder}
+     */
+    SdkConfigurationBuilder setProtocolNumberOfDispatchers(int protocolNumberOfDispatchers);
 
     /**
      * Build and return the {@link SdkConfiguration}

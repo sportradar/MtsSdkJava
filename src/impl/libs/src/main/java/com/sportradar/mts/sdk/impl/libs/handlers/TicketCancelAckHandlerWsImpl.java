@@ -13,8 +13,6 @@ import com.sportradar.mts.sdk.ws.internal.protocol.ProtocolEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ScheduledExecutorService;
-
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
@@ -25,7 +23,6 @@ public class TicketCancelAckHandlerWsImpl implements TicketCancelAckHandler {
     private final SdkLogger sdkLogger;
 
     private final ProtocolEngine engine;
-    private final ScheduledExecutorService executorService;
     private TicketCancelAckResponseListener ticketCancelAckResponseListener;
 
     private final Object stateLock = new Object();
@@ -34,12 +31,10 @@ public class TicketCancelAckHandlerWsImpl implements TicketCancelAckHandler {
     public TicketCancelAckHandlerWsImpl(
             String routingKey,
             SdkLogger sdkLogger,
-            ProtocolEngine engine,
-            ScheduledExecutorService executorService) {
+            ProtocolEngine engine) {
         this.routingKey = routingKey == null ? "ack.cancel" : routingKey;
         this.sdkLogger = sdkLogger;
         this.engine = engine;
-        this.executorService = executorService;
     }
 
     @Override
@@ -79,15 +74,13 @@ public class TicketCancelAckHandlerWsImpl implements TicketCancelAckHandler {
                 cancelAck.getCorrelationId()
         );
         logger.trace("PUBLISH {}", cancelAck.getJsonValue());
-        logger.debug("WS SEND cashout correlationId: {}", cancelAck.getCorrelationId()); // todo dmuren logging
-        String msgString = cancelAck.getJsonValue();
-        sdkLogger.logSendMessage(msgString);
+        sdkLogger.logSendMessage(cancelAck.getJsonValue());
         if (StringUtils.isNullOrEmpty(cancelAck.getCorrelationId())) {
             logger.warn("Ticket {} is missing correlationId", cancelAck.getTicketId());
         }
         engine.executeNoResponse(routingKey, cancelAck, cancelAck.getBookmakerId(),
                         () -> ticketCancelAckResponseListener.publishSuccess(cancelAck))
-                .whenComplete((response, throwable) -> { // todo dmuren double check logic
+                .whenComplete((response, throwable) -> {
                     if (throwable != null) {
                         ticketCancelAckResponseListener.publishFailure(cancelAck);
                     }

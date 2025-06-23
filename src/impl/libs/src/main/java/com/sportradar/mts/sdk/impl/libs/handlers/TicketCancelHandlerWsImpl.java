@@ -99,7 +99,7 @@ public class TicketCancelHandlerWsImpl implements TicketCancelHandler {
         }
         return engine.execute(routingKey, ticket, ticket.getBookmakerId(), TicketCancelResponse.class,
                         () -> ticketCancelResponseListener.publishSuccess(ticket))
-                .whenComplete((response, throwable) -> { // todo dmuren double check logic
+                .whenComplete((response, throwable) -> {
                     if (throwable instanceof ProtocolTimeoutException) {
                         ticketCancelResponseListener.onTicketResponseTimedOut(ticket);
                     } else if (throwable != null) {

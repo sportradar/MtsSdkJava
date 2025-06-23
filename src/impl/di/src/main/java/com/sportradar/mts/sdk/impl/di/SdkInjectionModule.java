@@ -147,7 +147,7 @@ public class SdkInjectionModule extends AbstractModule {
         return new ProtocolEngine(
                 sdkConfiguration,
                 e -> {
-                    e.printStackTrace(); // todo dmuren sad!
+                    e.printStackTrace();
                 });
     }
 
@@ -216,8 +216,7 @@ public class SdkInjectionModule extends AbstractModule {
             return new TicketReofferCancelHandlerWsImpl(
                     routingKey,
                     sdkLogger,
-                    engine,
-                    executorService);
+                    engine);
         } else {
             return new TicketReofferCancelHandlerImpl(amqpPublisher,
                     routingKey,
@@ -239,8 +238,7 @@ public class SdkInjectionModule extends AbstractModule {
             return new TicketAckHandlerWsImpl(
                     routingKey,
                     sdkLogger,
-                    engine,
-                    executorService);
+                    engine);
         } else {
             return new TicketAckHandlerImpl(amqpPublisher,
                     routingKey,
@@ -262,8 +260,7 @@ public class SdkInjectionModule extends AbstractModule {
             return new TicketCancelAckHandlerWsImpl(
                     routingKey,
                     sdkLogger,
-                    engine,
-                    executorService);
+                    engine);
         } else {
             return new TicketCancelAckHandlerImpl(amqpPublisher,
                     routingKey,

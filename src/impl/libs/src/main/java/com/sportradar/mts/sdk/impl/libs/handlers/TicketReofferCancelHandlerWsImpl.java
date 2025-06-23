@@ -13,8 +13,6 @@ import com.sportradar.mts.sdk.ws.internal.protocol.ProtocolEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ScheduledExecutorService;
-
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
@@ -25,7 +23,6 @@ public class TicketReofferCancelHandlerWsImpl implements TicketReofferCancelHand
     private final SdkLogger sdkLogger;
 
     private final ProtocolEngine engine;
-    private final ScheduledExecutorService executorService;
     private TicketReofferCancelResponseListener ticketReofferCancelResponseListener;
 
     private final Object stateLock = new Object();
@@ -34,12 +31,10 @@ public class TicketReofferCancelHandlerWsImpl implements TicketReofferCancelHand
     public TicketReofferCancelHandlerWsImpl(
             String routingKey,
             SdkLogger sdkLogger,
-            ProtocolEngine engine,
-            ScheduledExecutorService executorService) {
+            ProtocolEngine engine) {
         this.routingKey = routingKey == null ? "cancel.reoffer" : routingKey;
         this.sdkLogger = sdkLogger;
         this.engine = engine;
-        this.executorService = executorService;
     }
 
     @Override
@@ -79,15 +74,13 @@ public class TicketReofferCancelHandlerWsImpl implements TicketReofferCancelHand
                 reofferCancel.getCorrelationId()
         );
         logger.trace("PUBLISH {}", reofferCancel.getJsonValue());
-        logger.debug("WS SEND cashout correlationId: {}", reofferCancel.getCorrelationId()); // todo dmuren logging
-        String msgString = reofferCancel.getJsonValue();
-        sdkLogger.logSendMessage(msgString);
+        sdkLogger.logSendMessage(reofferCancel.getJsonValue());
         if (StringUtils.isNullOrEmpty(reofferCancel.getCorrelationId())) {
             logger.warn("Ticket {} is missing correlationId", reofferCancel.getTicketId());
         }
         engine.executeNoResponse(routingKey, reofferCancel, reofferCancel.getBookmakerId(),
                         () -> ticketReofferCancelResponseListener.publishSuccess(reofferCancel))
-                .whenComplete((response, throwable) -> { // todo dmuren double check logic
+                .whenComplete((response, throwable) -> {
                     if (throwable != null) {
                         ticketReofferCancelResponseListener.publishFailure(reofferCancel);
                     }

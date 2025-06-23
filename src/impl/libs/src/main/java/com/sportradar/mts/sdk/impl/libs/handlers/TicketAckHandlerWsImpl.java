@@ -13,8 +13,6 @@ import com.sportradar.mts.sdk.ws.internal.protocol.ProtocolEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ScheduledExecutorService;
-
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
@@ -25,7 +23,6 @@ public class TicketAckHandlerWsImpl implements TicketAckHandler {
     private final SdkLogger sdkLogger;
 
     private final ProtocolEngine engine;
-    private final ScheduledExecutorService executorService;
     private TicketAckResponseListener ticketAckResponseListener;
 
     private final Object stateLock = new Object();
@@ -34,12 +31,10 @@ public class TicketAckHandlerWsImpl implements TicketAckHandler {
     public TicketAckHandlerWsImpl(
             String routingKey,
             SdkLogger sdkLogger,
-            ProtocolEngine engine,
-            ScheduledExecutorService executorService) {
+            ProtocolEngine engine) {
         this.routingKey = routingKey == null ? "ack.ticket" : routingKey;
         this.sdkLogger = sdkLogger;
         this.engine = engine;
-        this.executorService = executorService;
     }
 
     @Override
@@ -79,15 +74,13 @@ public class TicketAckHandlerWsImpl implements TicketAckHandler {
                 ticketAck.getCorrelationId()
         );
         logger.trace("PUBLISH {}", ticketAck.getJsonValue());
-        logger.debug("WS SEND cashout correlationId: {}", ticketAck.getCorrelationId()); // todo dmuren logging
-        String msgString = ticketAck.getJsonValue();
-        sdkLogger.logSendMessage(msgString);
+        sdkLogger.logSendMessage(ticketAck.getJsonValue());
         if (StringUtils.isNullOrEmpty(ticketAck.getCorrelationId())) {
             logger.warn("Ticket {} is missing correlationId", ticketAck.getTicketId());
         }
         engine.executeNoResponse(routingKey, ticketAck, ticketAck.getBookmakerId(),
                         () -> ticketAckResponseListener.publishSuccess(ticketAck))
-                .whenComplete((response, throwable) -> { // todo dmuren double check logic
+                .whenComplete((response, throwable) -> {
                     if (throwable != null) {
                         ticketAckResponseListener.publishFailure(ticketAck);
                     }

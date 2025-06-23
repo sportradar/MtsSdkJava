@@ -48,7 +48,7 @@ public class SdkConfigurationImpl implements SdkConfiguration {
     private final String keycloakSecret;
     private final String mtsClientApiHost;
     private final UfEnvironment ufEnvironment;
-    private final boolean useWebsocket; // todo dmuren properties as they should be
+    private final boolean useWebsocket;
     private final URI authServer;
     private final String authClientId;
     private final String authClientSecret;

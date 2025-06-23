@@ -101,15 +101,13 @@ public class TicketHandlerWsImpl implements TicketHandler {
                 ticket.getCorrelationId()
         );
         logger.trace("PUBLISH {}", ticket.getJsonValue());
-        logger.debug("WS SEND ticket correlationId: {}", ticket.getCorrelationId()); // todo dmuren logging
-        String msgString = ticket.getJsonValue();
-        sdkLogger.logSendMessage(msgString);
+        sdkLogger.logSendMessage(ticket.getJsonValue());
         if (StringUtils.isNullOrEmpty(ticket.getCorrelationId())) {
             logger.warn("Ticket {} is missing correlationId", ticket.getTicketId());
         }
         return engine.execute(routingKey, ticket, ticket.getSender().getBookmakerId(), TicketResponse.class,
                         () -> ticketResponseListener.publishSuccess(ticket))
-                .whenComplete((response, throwable) -> { // todo dmuren double check logic
+                .whenComplete((response, throwable) -> {
                     if (throwable instanceof ProtocolTimeoutException) {
                         ticketResponseListener.onTicketResponseTimedOut(ticket);
                     } else if (throwable != null) {
@@ -130,8 +128,6 @@ public class TicketHandlerWsImpl implements TicketHandler {
     public void ticketResponseReceived(TicketResponse ticketResponse) {
         checkNotNull(ticketResponse, "ticketResponse cannot be null");
         sdkLogger.logReceivedMessage(JsonUtils.serializeAsString(ticketResponse));
-        logger.debug("WS RECEIVED ticket correlationId: {}", ticketResponse.getCorrelationId()); // todo dmuren logging
-
         executorService.submit(() -> {
             try {
                 ticketResponseListener.responseReceived(ticketResponse);

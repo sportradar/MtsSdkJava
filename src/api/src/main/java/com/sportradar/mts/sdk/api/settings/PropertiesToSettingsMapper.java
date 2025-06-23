@@ -232,7 +232,6 @@ public final class PropertiesToSettingsMapper {
             Preconditions.checkNotNull(keycloakSecret, StringUtils.format(MISSING_PROPERTY, SettingsKeys.KEYCLOAK_SECRET));
         }
 
-        // todo dmuren default settings logic doublecheck
         boolean useWebSocket = false;
         if (useWebSocketString != null) {
             Preconditions.checkArgument(isBoolean(useWebSocketString), "useWebSocket should be boolean");

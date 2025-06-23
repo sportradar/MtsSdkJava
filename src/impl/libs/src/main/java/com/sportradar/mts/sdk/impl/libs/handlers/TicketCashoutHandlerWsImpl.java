@@ -101,15 +101,13 @@ public class TicketCashoutHandlerWsImpl implements TicketCashoutHandler {
                 cashout.getCorrelationId()
         );
         logger.trace("PUBLISH {}", cashout.getJsonValue());
-        logger.debug("WS SEND cashout correlationId: {}", cashout.getCorrelationId()); // todo dmuren logging
-        String msgString = cashout.getJsonValue();
-        sdkLogger.logSendMessage(msgString);
+        sdkLogger.logSendMessage(cashout.getJsonValue());
         if (StringUtils.isNullOrEmpty(cashout.getCorrelationId())) {
             logger.warn("Ticket {} is missing correlationId", cashout.getTicketId());
         }
         return engine.execute(routingKey, cashout, cashout.getBookmakerId(), TicketCashoutResponse.class,
                         () -> ticketCashoutResponseListener.publishSuccess(cashout))
-                .whenComplete((response, throwable) -> { // todo dmuren double check logic
+                .whenComplete((response, throwable) -> {
                     if (throwable instanceof ProtocolTimeoutException) {
                         ticketCashoutResponseListener.onTicketResponseTimedOut(cashout);
                     } else if (throwable != null) {
@@ -130,7 +128,6 @@ public class TicketCashoutHandlerWsImpl implements TicketCashoutHandler {
     public void ticketCashoutResponseReceived(TicketCashoutResponse ticketCashoutResponse) {
         checkNotNull(ticketCashoutResponse, "TicketCashoutResponse cannot be null");
         sdkLogger.logReceivedMessage(JsonUtils.serializeAsString(ticketCashoutResponse));
-        logger.debug("WS RECEIVED ticket correlationId: {}", ticketCashoutResponse.getCorrelationId()); // todo dmuren logging
         executorService.submit(() -> {
             try {
                 ticketCashoutResponseListener.responseReceived(ticketCashoutResponse);

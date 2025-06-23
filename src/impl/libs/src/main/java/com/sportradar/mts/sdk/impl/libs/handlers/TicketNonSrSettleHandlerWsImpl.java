@@ -101,15 +101,13 @@ public class TicketNonSrSettleHandlerWsImpl implements TicketNonSrSettleHandler 
                 ticket.getCorrelationId()
         );
         logger.trace("PUBLISH {}", ticket.getJsonValue());
-        logger.debug("WS SEND ticket correlationId: {}", ticket.getCorrelationId()); // todo dmuren logging
-        String msgString = ticket.getJsonValue();
-        sdkLogger.logSendMessage(msgString);
+        sdkLogger.logSendMessage(ticket.getJsonValue());
         if (StringUtils.isNullOrEmpty(ticket.getCorrelationId())) {
             logger.warn("Ticket {} is missing correlationId", ticket.getTicketId());
         }
         return engine.execute(routingKey, ticket, ticket.getBookmakerId(), TicketNonSrSettleResponse.class,
                         () -> ticketNonSrSettleResponseListener.publishSuccess(ticket))
-                .whenComplete((response, throwable) -> { // todo dmuren double check logic
+                .whenComplete((response, throwable) -> {
                     if (throwable instanceof ProtocolTimeoutException) {
                         ticketNonSrSettleResponseListener.onTicketResponseTimedOut(ticket);
                     } else if (throwable != null) {
@@ -130,8 +128,6 @@ public class TicketNonSrSettleHandlerWsImpl implements TicketNonSrSettleHandler 
     public void setTicketNonSrSettleResponse(TicketNonSrSettleResponse ticketNonSrSettleResponse) {
         checkNotNull(ticketNonSrSettleResponse, "TicketNonSrSettleResponse cannot be null");
         sdkLogger.logReceivedMessage(JsonUtils.serializeAsString(ticketNonSrSettleResponse));
-        logger.debug("WS RECEIVED ticket correlationId: {}", ticketNonSrSettleResponse.getCorrelationId()); // todo dmuren logging
-
         executorService.submit(() -> {
             try {
             ticketNonSrSettleResponseListener.responseReceived(ticketNonSrSettleResponse);

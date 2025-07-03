@@ -46,7 +46,7 @@
         <module>app</module>
         <module>impl</module>
         <module>mts-sdk-external-example</module>
-<!--        <module>distribution</module> todo dmuren -->
+        <module>distribution</module>
         <module>ws</module>
     </modules>
 

@@ -347,7 +347,7 @@ public final class PropertiesToSettingsMapper {
         if (protocolMaxSendBufferSizeString != null) {
             protocolMaxSendBufferSize = Integer.parseInt(protocolMaxSendBufferSizeString);
         } else {
-            protocolMaxSendBufferSize = 0;
+            protocolMaxSendBufferSize = 1000;
         }
 
         Duration protocolEnqueueTimeout;
@@ -375,7 +375,7 @@ public final class PropertiesToSettingsMapper {
         if (protocolRetryCountString != null) {
             protocolRetryCount = Integer.parseInt(protocolRetryCountString);
         } else {
-            protocolRetryCount = 3;
+            protocolRetryCount = 0;
         }
 
         int protocolNumberOfDispatchers;

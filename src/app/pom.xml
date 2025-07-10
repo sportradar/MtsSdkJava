@@ -118,6 +118,7 @@
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.5.1</version>
                 <configuration>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
                     <artifactSet>
                         <excludes>
                             <exclude>ch.qos.logback:*</exclude>

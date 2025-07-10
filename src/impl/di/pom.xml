@@ -15,6 +15,7 @@
 
     <groupId>com.sportradar.mts.sdk.impl.di</groupId>
     <artifactId>mts-sdk-impl-di</artifactId>
+    <name>MTS SDK Impl DI</name>
 
     <dependencies>
         <dependency>

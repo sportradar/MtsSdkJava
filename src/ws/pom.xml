@@ -9,6 +9,7 @@
 
     <groupId>com.sportradar.mts.sdk.ws</groupId>
     <artifactId>mts-sdk-ws</artifactId>
+    <name>MTS SDK WebSocket</name>
 
     <dependencies>
         <dependency>

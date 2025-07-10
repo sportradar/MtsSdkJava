@@ -48,7 +48,7 @@ public class SdkConfigurationImpl implements SdkConfiguration {
     private final String keycloakSecret;
     private final String mtsClientApiHost;
     private final UfEnvironment ufEnvironment;
-    private final boolean useWebsocket;
+    private final boolean useWebSocket;
     private final URI authServer;
     private final String authClientId;
     private final String authClientSecret;
@@ -99,7 +99,7 @@ public class SdkConfigurationImpl implements SdkConfiguration {
                                    String keycloakPassword,
                                    String keycloakSecret,
                                    String mtsClientApiHost,
-                                   boolean useWebsocket,
+                                   boolean useWebSocket,
                                    URI authServer,
                                    String authClientId,
                                    String authClientSecret,
@@ -159,7 +159,7 @@ public class SdkConfigurationImpl implements SdkConfiguration {
         this.keycloakSecret = keycloakSecret;
         this.mtsClientApiHost = mtsClientApiHost;
 
-        this.useWebsocket = useWebsocket;
+        this.useWebSocket = useWebSocket;
         this.authServer = authServer;
         this.authClientId = authClientId;
         this.authClientSecret = authClientSecret;
@@ -225,7 +225,7 @@ public class SdkConfigurationImpl implements SdkConfiguration {
         this.keycloakSecret = config.getKeycloakSecret();
         this.mtsClientApiHost = config.getMtsClientApiHost();
 
-        this.useWebsocket = config.getUseWebSocket();
+        this.useWebSocket = config.getUseWebSocket();
         this.authServer = config.getAuthServer();
         this.authClientId = config.getAuthClientId();
         this.authClientSecret = config.getAuthClientSecret();
@@ -352,7 +352,7 @@ public class SdkConfigurationImpl implements SdkConfiguration {
 
     @Override
     public Boolean getUseWebSocket() {
-        return useWebsocket;
+        return useWebSocket;
     }
 
     @Override
@@ -489,7 +489,7 @@ public class SdkConfigurationImpl implements SdkConfiguration {
                 ", keycloakPassword='" + "*" + '\'' +
                 ", keycloakSecret='" + "*" + '\'' +
                 ", mtsClientApiHost='" + mtsClientApiHost + '\'' +
-                ", useWebsocket='" + useWebsocket + '\'' +
+                ", useWebSocket='" + useWebSocket + '\'' +
                 ", authServer='" + authServer + '\'' +
                 ", authClientId='" + "*" + '\'' +
                 ", authClientSecret='" + "*" + '\'' +

@@ -1,6 +1,7 @@
 package com.sportradar.mts.sdk.ws.internal.protocol;
 
 import com.sportradar.mts.sdk.api.SdkTicket;
+import com.sportradar.mts.sdk.api.interfaces.ConnectionStatus;
 import com.sportradar.mts.sdk.api.interfaces.SdkConfiguration;
 import com.sportradar.mts.sdk.api.utils.JsonUtils;
 import com.sportradar.mts.sdk.api.ws.Request;
@@ -43,13 +44,14 @@ public class ProtocolEngine implements AutoCloseable {
 
     public ProtocolEngine(
             final SdkConfiguration sdkConfiguration,
+            final ConnectionStatus connectionStatus,
             final Consumer<Exception> unhandledExceptionHandler) {
         this.sdkConfiguration = sdkConfiguration;
         this.sendQueue = new LinkedBlockingQueue<>();
         this.receiveQueue = new LinkedBlockingQueue<>();
         this.correlationIdAwaiter = new ConcurrentHashMap<>();
         this.approxRequestCount = new AtomicInteger(0);
-        this.connectionProvider = new ConnectionProvider(sdkConfiguration, sendQueue, receiveQueue);
+        this.connectionProvider = new ConnectionProvider(sdkConfiguration, connectionStatus, sendQueue, receiveQueue);
         this.unhandledExceptionHandler = unhandledExceptionHandler;
     }
 

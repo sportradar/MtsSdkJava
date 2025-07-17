@@ -143,9 +143,10 @@ public class SdkInjectionModule extends AbstractModule {
 
     @Singleton
     @Provides
-    public ProtocolEngine provideProtocolEngine() {
+    public ProtocolEngine provideProtocolEngine(ConnectionStatus connectionStatus) {
         return new ProtocolEngine(
                 sdkConfiguration,
+                connectionStatus,
                 e -> {
                     e.printStackTrace();
                 });

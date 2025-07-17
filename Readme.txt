@@ -1,10 +1,10 @@
 A MTS SDK Java library
 
 CHANGE LOG:
-2025-07-07 2.4.1.3-17
+2025-07-07 2.4.2.0-17
 Security patching
 Java 17
-WebSocket protocol support
+WebSocket connectivity support
 
 2023-11-30 2.4.1.2
 Changed timings on reconnects, updated guides

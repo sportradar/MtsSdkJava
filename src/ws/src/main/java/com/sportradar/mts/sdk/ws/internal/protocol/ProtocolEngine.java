@@ -173,8 +173,6 @@ public class ProtocolEngine implements AutoCloseable {
 
     private List<ByteBuffer> createFrames(final Request request) {
         final String json = JsonUtils.serializeAsString(request);
-        System.out.println("Request JSON: \n" + json);
-        System.out.println();
         final byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
         if (bytes.length > MAX_MSG_SIZE) {
             throw new ProtocolMessageTooBigException();

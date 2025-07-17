@@ -10,7 +10,7 @@
 
     <artifactId>mts-sdk</artifactId>
     <groupId>com.sportradar.mts.sdk</groupId>
-    <version>2.4.1.2-ws</version>
+    <version>2.4.2.0-17</version>
     <name>MTS SDK</name>
     <packaging>pom</packaging>
     <inceptionYear>2017</inceptionYear>
@@ -77,7 +77,7 @@
         <!-- Distribution util -->
         <sr.dollarSign>$</sr.dollarSign>
         <deploy.version>${project.version}</deploy.version>
-        <mts.relocation.supported.ticket.version>ticket25</mts.relocation.supported.ticket.version>
+        <mts.relocation.supported.ticket.version>ticket24-17</mts.relocation.supported.ticket.version>
     </properties>
 
     <dependencyManagement>

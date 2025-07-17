@@ -11,7 +11,7 @@
     <parent>
         <artifactId>mts-sdk</artifactId>
         <groupId>com.sportradar.mts.sdk</groupId>
-        <version>2.4.1.2-ws</version>
+        <version>2.4.2.0-17</version>
     </parent>
 
     <groupId>com.sportradar.demo</groupId>

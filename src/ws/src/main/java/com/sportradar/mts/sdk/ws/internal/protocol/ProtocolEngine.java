@@ -283,7 +283,7 @@ public class ProtocolEngine implements AutoCloseable {
             if (responseReceived(response.getCorrelationId(), response)) return;
 
             final ProtocolInvalidResponseException invalidResponseException =
-                    new ProtocolInvalidResponseException("Invalid response: " + msg.getContent());
+                    new ProtocolInvalidResponseException("Unknown message: " + msg.getContent());
 
             if (responseReceived(response.getCorrelationId(), invalidResponseException)) return;
 

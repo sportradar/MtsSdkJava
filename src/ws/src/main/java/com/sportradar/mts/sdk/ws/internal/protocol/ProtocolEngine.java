@@ -167,8 +167,7 @@ public class ProtocolEngine implements AutoCloseable {
         sendQueue.add(awaiter.getSendWsInputMessage());
 
         final int nextRetryCount = retryCount + 1;
-        delay(() -> enqueueSendMsg(awaiter, nextRetryCount),
-                sdkConfiguration.getProtocolReceiveResponseTimeout().toMillis(), TimeUnit.MILLISECONDS);
+        delay(() -> enqueueSendMsg(awaiter, nextRetryCount), sdkConfiguration.getProtocolReceiveResponseTimeout());
     }
 
     private List<ByteBuffer> createFrames(final Request request) {

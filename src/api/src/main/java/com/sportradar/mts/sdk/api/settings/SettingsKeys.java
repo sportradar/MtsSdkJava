@@ -194,6 +194,11 @@ public final class SettingsKeys {
     public static final String WS_REFRESH_CONNECTION_TIMEOUT = PREFIX + "wsRefreshConnectionTimeout";
 
     /**
+     * Gets the WebSocket ping interval
+     */
+    public static final String WS_PING_INTERVAL = PREFIX + "wsPingInterval";
+
+    /**
      * Gets the WebSocket number of connections
      */
     public static final String WS_NUMBER_OF_CONNECTIONS = PREFIX + "wsNumberOfConnections";

@@ -8,6 +8,7 @@ import java.util.List;
 public class SendWsInputMessage extends WsInputMessage {
 
     private final List<ByteBuffer> content;
+    private volatile boolean suppressed = false;
 
     public SendWsInputMessage(final String correlationId, final List<ByteBuffer> content) {
         super(correlationId);
@@ -16,5 +17,13 @@ public class SendWsInputMessage extends WsInputMessage {
 
     public List<ByteBuffer> getContent() {
         return content;
+    }
+
+    public boolean isSuppressed() {
+        return suppressed;
+    }
+
+    public void suppressSend() {
+        suppressed = true;
     }
 }

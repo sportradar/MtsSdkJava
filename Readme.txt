@@ -1,6 +1,11 @@
 A MTS SDK Java library
 
 CHANGE LOG:
+2025-10-10 2.4.2.1-17
+WebSocket connect throttling
+Default WebSocket config tweaking
+Java HTTP client instead of OkHttp for WebSocket token
+
 2025-07-07 2.4.2.0-17
 Security patching
 Java 17

@@ -4,10 +4,12 @@ import com.sportradar.mts.sdk.api.interfaces.SdkConfiguration;
 import com.sportradar.mts.sdk.ws.exceptions.AuthTokenFailureException;
 import com.sportradar.mts.sdk.ws.exceptions.SdkException;
 import com.sportradar.mts.sdk.ws.internal.utils.Json;
-import okhttp3.*;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
 import static com.sportradar.mts.sdk.ws.internal.utils.TimeUtils.nowUtcMillis;
@@ -16,24 +18,19 @@ import static com.sportradar.mts.sdk.ws.internal.utils.TimeUtils.sleep;
 public class TokenProvider implements AutoCloseable {
 
     private final SdkConfiguration config;
-    private final OkHttpClient okHttpClient;
+    private final HttpClient httpClient;
 
     private String accessToken;
     private long accessTokenExpiry;
+    private String accessAuthError;
 
     public TokenProvider(final SdkConfiguration config) {
         this.config = config;
-        this.okHttpClient = new OkHttpClient.Builder()
-                .callTimeout(config.getAuthRequestTimeout())
-                .build();
+        this.httpClient = HttpClient.newHttpClient();
     }
 
     private static String urlEncode(final String value) {
-        try {
-            return URLEncoder.encode(value, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        return URLEncoder.encode(value, StandardCharsets.UTF_8);
     }
 
     public void connect() {
@@ -47,7 +44,7 @@ public class TokenProvider implements AutoCloseable {
         try {
             Exception possibleExc = null;
             String token = null;
-            for (int i = 0; i < 10 && token == null; i++) {
+            for (var i = 0; i < 3 && token == null; i++) {
                 try {
                     token = fetchToken();
                 } catch (final Exception e) {
@@ -70,17 +67,18 @@ public class TokenProvider implements AutoCloseable {
 
     private String fetchToken() {
         final String oldToken = readToken();
-        if (isTokenOK(oldToken)) {
+        if (isNotNullOrEmpty(oldToken)) {
             return oldToken;
         }
         final AuthResponse auth = fetchAuthResponse();
         final String newToken = auth.getAccessToken();
-        if (isTokenOK(newToken)) {
+        if (isNotNullOrEmpty(newToken)) {
             storeToken(newToken, auth.getExpiresIn() != null ? auth.getExpiresIn() : 0);
             return newToken;
         }
         final String authErrMsg = getAuthErrMsg(auth);
-        if (authErrMsg != null) {
+        if (isNotNullOrEmpty(authErrMsg)) {
+            storeAuthError(authErrMsg);
             throw new AuthTokenFailureException(authErrMsg);
         }
         sleep(config.getAuthRetryDelay().toMillis());
@@ -89,24 +87,20 @@ public class TokenProvider implements AutoCloseable {
 
     private AuthResponse fetchAuthResponse() {
         try {
-            final RequestBody formBody = new FormBody.Builder()
-                    .add("grant_type", "client_credentials")
-                    .add("client_id", urlEncode(config.getAuthClientId()))
-                    .add("client_secret", urlEncode(config.getAuthClientSecret()))
-                    .add("audience", urlEncode(config.getAuthAudience()))
-                    .build();
-            final Request request = new Request.Builder()
-                    .url(config.getAuthServer().toURL())
+            final String urlEncodedForm = "grant_type=client_credentials"
+                    + "&client_id=" + urlEncode(config.getAuthClientId())
+                    + "&client_secret=" + urlEncode(config.getAuthClientSecret())
+                    + "&audience=" + urlEncode(config.getAuthAudience());
+            final HttpRequest request = HttpRequest.newBuilder()
+                    .uri(config.getAuthServer())
                     .header("Content-Type", "application/x-www-form-urlencoded")
                     .header("Accept", "application/json")
-                    .post(formBody)
+                    .timeout(config.getAuthRequestTimeout())
+                    .POST(HttpRequest.BodyPublishers.ofString(urlEncodedForm))
                     .build();
-            try (Response response = okHttpClient.newCall(request).execute()) {
-                if (!response.isSuccessful()) {
-                    throw new AuthTokenFailureException("Auth request failed: " + response.code());
-                }
-                return Json.deserializeAuthResponse(response.body().string());
-            }
+            final HttpResponse<String> response = httpClient
+                    .send(request, HttpResponse.BodyHandlers.ofString());
+            return Json.deserializeAuthResponse(response.body());
         } catch (final Exception exc) {
             throw new AuthTokenFailureException(exc);
         }
@@ -114,16 +108,22 @@ public class TokenProvider implements AutoCloseable {
 
     private String readToken() {
         final String token = accessToken;
-        if (!isTokenOK(token)) {
-            return null;
+        if (isNullOrEmpty(token)) {
+            return readAuthError();
         }
-
         final long now = nowUtcMillis();
         return now > accessTokenExpiry ? null : token;
     }
 
-    private boolean isTokenOK(final String token) {
-        return isNotNullOrEmpty(token);
+    private String readAuthError() {
+        final String err = accessAuthError;
+        if (isNotNullOrEmpty(err)) {
+            final long now = nowUtcMillis();
+            if (now < accessTokenExpiry) {
+                throw new AuthTokenFailureException(err);
+            }
+        }
+        return null;
     }
 
     private String getAuthErrMsg(final AuthResponse authResponse) {
@@ -146,7 +146,14 @@ public class TokenProvider implements AutoCloseable {
         if (expiresIn > 1) {
             accessTokenExpiry = nowUtcMillis() + TimeUnit.SECONDS.toMillis(expiresIn - 1);
             accessToken = token;
+            accessAuthError = null;
         }
+    }
+
+    private void storeAuthError(final String error) {
+        accessTokenExpiry = nowUtcMillis() + TimeUnit.SECONDS.toMillis(60);
+        accessToken = null;
+        accessAuthError = error;
     }
 
     private boolean isNotNullOrEmpty(final String input) {
@@ -154,6 +161,6 @@ public class TokenProvider implements AutoCloseable {
     }
 
     private boolean isNullOrEmpty(final String input) {
-        return input == null || input.trim().length() == 0;
+        return input == null || input.trim().isEmpty();
     }
 }

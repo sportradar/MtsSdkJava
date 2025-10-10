@@ -71,6 +71,7 @@ public final class PropertiesToSettingsMapper {
         String wsReceiveMessageTimeoutString = properties.getProperty(SettingsKeys.WS_RECEIVE_MESSAGE_TIMEOUT);
         String wsConsumerGraceTimeoutString = properties.getProperty(SettingsKeys.WS_CONSUMER_GRACE_TIMEOUT);
         String wsRefreshConnectionTimeoutString = properties.getProperty(SettingsKeys.WS_REFRESH_CONNECTION_TIMEOUT);
+        String wsPingIntervalString = properties.getProperty(SettingsKeys.WS_PING_INTERVAL);
         String wsNumberOfConnectionsString = properties.getProperty(SettingsKeys.WS_NUMBER_OF_CONNECTIONS);
         String protocolConnectTimeoutString = properties.getProperty(SettingsKeys.PROTOCOL_CONNECT_TIMEOUT);
         String protocolMaxSendBufferSizeString = properties.getProperty(SettingsKeys.PROTOCOL_MAX_SEND_BUFFER_SIZE);
@@ -270,14 +271,14 @@ public final class PropertiesToSettingsMapper {
         if (authRequestTimeoutString != null) {
             authRequestTimeout = Duration.parse(authRequestTimeoutString);
         } else {
-            authRequestTimeout = Duration.ofSeconds(30);
+            authRequestTimeout = Duration.ofSeconds(5);
         }
 
         Duration authRetryDelay;
         if (authRetryDelayString != null) {
             authRetryDelay = Duration.parse(authRetryDelayString);
         } else {
-            authRetryDelay = Duration.ofSeconds(5);
+            authRetryDelay = Duration.ofSeconds(1);
         }
 
         URI wsServer;
@@ -291,21 +292,21 @@ public final class PropertiesToSettingsMapper {
         if (wsReconnectTimeoutString != null) {
             wsReconnectTimeout = Duration.parse(wsReconnectTimeoutString);
         } else {
-            wsReconnectTimeout = Duration.ofSeconds(30);
+            wsReconnectTimeout = Duration.ofSeconds(10);
         }
 
         Duration wsFetchMessageTimeout;
         if (wsFetchMessageTimeoutString != null) {
             wsFetchMessageTimeout = Duration.parse(wsFetchMessageTimeoutString);
         } else {
-            wsFetchMessageTimeout = Duration.ofSeconds(30);
+            wsFetchMessageTimeout = Duration.ofSeconds(1);
         }
 
         Duration wsSendMessageTimeout;
         if (wsSendMessageTimeoutString != null) {
             wsSendMessageTimeout = Duration.parse(wsSendMessageTimeoutString);
         } else {
-            wsSendMessageTimeout = Duration.ofSeconds(30);
+            wsSendMessageTimeout = Duration.ofSeconds(1);
         }
 
         Duration wsReceiveMessageTimeout;
@@ -319,14 +320,21 @@ public final class PropertiesToSettingsMapper {
         if (wsConsumerGraceTimeoutString != null) {
             wsConsumerGraceTimeout = Duration.parse(wsConsumerGraceTimeoutString);
         } else {
-            wsConsumerGraceTimeout = Duration.ofSeconds(30);
+            wsConsumerGraceTimeout = Duration.ofMinutes(10);
         }
 
         Duration wsRefreshConnectionTimeout;
         if (wsRefreshConnectionTimeoutString != null) {
             wsRefreshConnectionTimeout = Duration.parse(wsRefreshConnectionTimeoutString);
         } else {
-            wsRefreshConnectionTimeout = Duration.ofSeconds(30);
+            wsRefreshConnectionTimeout = Duration.ofMinutes(100);
+        }
+
+        Duration wsPingInterval;
+        if (wsPingIntervalString != null) {
+            wsPingInterval = Duration.parse(wsPingIntervalString);
+        } else {
+            wsPingInterval = Duration.ofMinutes(1);
         }
 
         int wsNumberOfConnections;
@@ -340,35 +348,35 @@ public final class PropertiesToSettingsMapper {
         if (protocolConnectTimeoutString != null) {
             protocolConnectTimeout = Duration.parse(protocolConnectTimeoutString);
         } else {
-            protocolConnectTimeout = Duration.ofSeconds(30);
+            protocolConnectTimeout = Duration.ofSeconds(10);
         }
 
         int protocolMaxSendBufferSize;
         if (protocolMaxSendBufferSizeString != null) {
             protocolMaxSendBufferSize = Integer.parseInt(protocolMaxSendBufferSizeString);
         } else {
-            protocolMaxSendBufferSize = 1000;
+            protocolMaxSendBufferSize = 1_000;
         }
 
         Duration protocolEnqueueTimeout;
         if (protocolEnqueueTimeoutString != null) {
             protocolEnqueueTimeout = Duration.parse(protocolEnqueueTimeoutString);
         } else {
-            protocolEnqueueTimeout = Duration.ofSeconds(30);
+            protocolEnqueueTimeout = Duration.ofMillis(100);
         }
 
         Duration protocolDequeueTimeout;
         if (protocolDequeueTimeoutString != null) {
             protocolDequeueTimeout = Duration.parse(protocolDequeueTimeoutString);
         } else {
-            protocolDequeueTimeout = Duration.ofSeconds(30);
+            protocolDequeueTimeout = Duration.ofSeconds(1);
         }
 
         Duration protocolReceiveResponseTimeout;
         if (protocolReceiveResponseTimeoutString != null) {
             protocolReceiveResponseTimeout = Duration.parse(protocolReceiveResponseTimeoutString);
         } else {
-            protocolReceiveResponseTimeout = Duration.ofSeconds(30);
+            protocolReceiveResponseTimeout = Duration.ofSeconds(20);
         }
 
         int protocolRetryCount;
@@ -426,6 +434,7 @@ public final class PropertiesToSettingsMapper {
                 wsReceiveMessageTimeout,
                 wsConsumerGraceTimeout,
                 wsRefreshConnectionTimeout,
+                wsPingInterval,
                 wsNumberOfConnections,
                 protocolConnectTimeout,
                 protocolMaxSendBufferSize,

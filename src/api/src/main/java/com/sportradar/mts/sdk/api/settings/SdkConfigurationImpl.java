@@ -62,6 +62,7 @@ public class SdkConfigurationImpl implements SdkConfiguration {
     private final Duration wsReceiveMessageTimeout;
     private final Duration wsConsumerGraceTimeout;
     private final Duration wsRefreshConnectionTimeout;
+    private final Duration wsPingInterval;
     private final int wsNumberOfConnections;
     private final Duration protocolConnectTimeout;
     private final int protocolMaxSendBufferSize;
@@ -113,6 +114,7 @@ public class SdkConfigurationImpl implements SdkConfiguration {
                                    Duration wsReceiveMessageTimeout,
                                    Duration wsConsumerGraceTimeout,
                                    Duration wsRefreshConnectionTimeout,
+                                   Duration wsPingInterval,
                                    int wsNumberOfConnections,
                                    Duration protocolConnectTimeout,
                                    int protocolMaxSendBufferSize,
@@ -173,6 +175,7 @@ public class SdkConfigurationImpl implements SdkConfiguration {
         this.wsReceiveMessageTimeout = wsReceiveMessageTimeout;
         this.wsConsumerGraceTimeout = wsConsumerGraceTimeout;
         this.wsRefreshConnectionTimeout = wsRefreshConnectionTimeout;
+        this.wsPingInterval = wsPingInterval;
         this.wsNumberOfConnections = wsNumberOfConnections;
         this.protocolConnectTimeout = protocolConnectTimeout;
         this.protocolMaxSendBufferSize = protocolMaxSendBufferSize;
@@ -239,6 +242,7 @@ public class SdkConfigurationImpl implements SdkConfiguration {
         this.wsReceiveMessageTimeout = config.getWsReceiveMessageTimeout();
         this.wsConsumerGraceTimeout = config.getWsConsumerGraceTimeout();
         this.wsRefreshConnectionTimeout = config.getWsRefreshConnectionTimeout();
+        this.wsPingInterval = config.getWsPingInterval();
         this.wsNumberOfConnections = config.getWsNumberOfConnections();
         this.protocolConnectTimeout = config.getProtocolConnectTimeout();
         this.protocolMaxSendBufferSize = config.getProtocolMaxSendBufferSize();
@@ -421,6 +425,11 @@ public class SdkConfigurationImpl implements SdkConfiguration {
     }
 
     @Override
+    public Duration getWsPingInterval() {
+        return wsPingInterval;
+    }
+
+    @Override
     public int getWsNumberOfConnections() {
         return wsNumberOfConnections;
     }
@@ -503,6 +512,7 @@ public class SdkConfigurationImpl implements SdkConfiguration {
                 ", wsReceiveMessageTimeout='" + wsReceiveMessageTimeout + '\'' +
                 ", wsConsumerGraceTimeout='" + wsConsumerGraceTimeout + '\'' +
                 ", wsRefreshConnectionTimeout='" + wsRefreshConnectionTimeout + '\'' +
+                ", wsPingInterval='" + wsPingInterval + '\'' +
                 ", wsNumberOfConnections='" + wsNumberOfConnections + '\'' +
                 ", protocolConnectTimeout='" + protocolConnectTimeout + '\'' +
                 ", protocolMaxSendBufferSize='" + protocolMaxSendBufferSize + '\'' +

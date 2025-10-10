@@ -550,6 +550,16 @@ public class SdkConfigurationBuilderImpl implements SdkConfigurationBuilder {
     }
 
     @Override
+    public SdkConfigurationBuilder setWsPingInterval(Duration wsPingInterval) {
+        if (wsPingInterval == null)
+        {
+            throw new IllegalArgumentException(SdkInfo.Literals.CONFIG_BUILDER_PARAM_EMPTY);
+        }
+        properties.setProperty(SettingsKeys.WS_PING_INTERVAL, String.valueOf(wsPingInterval));
+        return this;
+    }
+
+    @Override
     public SdkConfigurationBuilder setWsNumberOfConnections(int wsNumberOfConnections) {
         properties.setProperty(SettingsKeys.WS_NUMBER_OF_CONNECTIONS, String.valueOf(wsNumberOfConnections));
         return this;

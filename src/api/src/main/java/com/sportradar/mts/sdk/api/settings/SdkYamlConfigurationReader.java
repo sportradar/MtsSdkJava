@@ -133,6 +133,29 @@ class SdkYamlConfigurationReader {
         handlePossibleProperty(result, sdkConfiguration, "keycloakPassword", SettingsKeys.KEYCLOAK_PASSWORD);
         handlePossibleProperty(result, sdkConfiguration, "keycloakSecret", SettingsKeys.KEYCLOAK_SECRET);
         handlePossibleProperty(result, sdkConfiguration, "mtsClientApiHost", SettingsKeys.MTS_CLIENT_API_HOST);
+        handlePossibleProperty(result, sdkConfiguration, "useWebSocket", SettingsKeys.USE_WEB_SOCKET);
+        handlePossibleProperty(result, sdkConfiguration, "authServer", SettingsKeys.AUTH_SERVER);
+        handlePossibleProperty(result, sdkConfiguration, "authClientId", SettingsKeys.AUTH_CLIENT_ID);
+        handlePossibleProperty(result, sdkConfiguration, "authClientSecret", SettingsKeys.AUTH_CLIENT_SECRET);
+        handlePossibleProperty(result, sdkConfiguration, "authAudience", SettingsKeys.AUTH_AUDIENCE);
+        handlePossibleProperty(result, sdkConfiguration, "authRequestTimeout", SettingsKeys.AUTH_REQUEST_TIMEOUT);
+        handlePossibleProperty(result, sdkConfiguration, "authRetryDelay", SettingsKeys.AUTH_RETRY_DELAY);
+        handlePossibleProperty(result, sdkConfiguration, "wsServer", SettingsKeys.WS_SERVER);
+        handlePossibleProperty(result, sdkConfiguration, "wsReconnectTimeout", SettingsKeys.WS_RECONNECT_TIMEOUT);
+        handlePossibleProperty(result, sdkConfiguration, "wsFetchMessageTimeout", SettingsKeys.WS_FETCH_MESSAGE_TIMEOUT);
+        handlePossibleProperty(result, sdkConfiguration, "wsSendMessageTimeout", SettingsKeys.WS_SEND_MESSAGE_TIMEOUT);
+        handlePossibleProperty(result, sdkConfiguration, "wsReceiveMessageTimeout", SettingsKeys.WS_RECEIVE_MESSAGE_TIMEOUT);
+        handlePossibleProperty(result, sdkConfiguration, "wsConsumerGraceTimeout", SettingsKeys.WS_CONSUMER_GRACE_TIMEOUT);
+        handlePossibleProperty(result, sdkConfiguration, "wsRefreshConnectionTimeout", SettingsKeys.WS_REFRESH_CONNECTION_TIMEOUT);
+        handlePossibleProperty(result, sdkConfiguration, "wsPingInterval", SettingsKeys.WS_PING_INTERVAL);
+        handlePossibleProperty(result, sdkConfiguration, "wsNumberOfConnections", SettingsKeys.WS_NUMBER_OF_CONNECTIONS);
+        handlePossibleProperty(result, sdkConfiguration, "protocolConnectTimeout", SettingsKeys.PROTOCOL_CONNECT_TIMEOUT);
+        handlePossibleProperty(result, sdkConfiguration, "protocolMaxSendBufferSize", SettingsKeys.PROTOCOL_MAX_SEND_BUFFER_SIZE);
+        handlePossibleProperty(result, sdkConfiguration, "protocolEnqueueTimeout", SettingsKeys.PROTOCOL_ENQUEUE_TIMEOUT);
+        handlePossibleProperty(result, sdkConfiguration, "protocolDequeueTimeout", SettingsKeys.PROTOCOL_DEQUEUE_TIMEOUT);
+        handlePossibleProperty(result, sdkConfiguration, "protocolReceiveResponseTimeout", SettingsKeys.PROTOCOL_RECEIVE_RESPONSE_TIMEOUT);
+        handlePossibleProperty(result, sdkConfiguration, "protocolRetryCount", SettingsKeys.PROTOCOL_RETRY_COUNT);
+        handlePossibleProperty(result, sdkConfiguration, "protocolNumberOfDispatchers", SettingsKeys.PROTOCOL_NUMBER_OF_DISPATCHERS);
 
         return result;
     }

@@ -264,6 +264,12 @@ public interface SdkConfiguration {
     Duration getWsRefreshConnectionTimeout();
 
     /**
+     * Gets the WebSocket ping interval
+     * @return the ping interval duration
+     */
+    Duration getWsPingInterval();
+
+    /**
      * Gets the number of WebSocket connections
      * @return the number of connections
      */

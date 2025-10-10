@@ -1,5 +1,6 @@
 package com.sportradar.mts.sdk.ws.internal.utils;
 
+import java.time.Duration;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
@@ -15,8 +16,8 @@ public class Delayer {
         EXECUTOR = executor;
     }
 
-    public static ScheduledFuture<?> delay(final Runnable command, final long delay, final TimeUnit unit) {
-        return EXECUTOR.schedule(command, delay, unit);
+    public static ScheduledFuture<?> delay(final Runnable command, final Duration delay) {
+        return EXECUTOR.schedule(command, delay.toMillis(), TimeUnit.MILLISECONDS);
     }
 
     private static final class SdkDelayerThreadFactory implements ThreadFactory {

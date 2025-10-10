@@ -329,6 +329,14 @@ public interface SdkConfigurationBuilder {
     SdkConfigurationBuilder setWsRefreshConnectionTimeout(Duration wsRefreshConnectionTimeout);
 
     /**
+     * Sets the WebSocket ping interval
+     *
+     * @param wsPingInterval the ping interval to be set
+     * @return {@link SdkConfigurationBuilder}
+     */
+    SdkConfigurationBuilder setWsPingInterval(Duration wsPingInterval);
+
+    /**
      * Sets the number of WebSocket connections
      *
      * @param wsNumberOfConnections the number of connections to be set

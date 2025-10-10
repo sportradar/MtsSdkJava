@@ -62,6 +62,7 @@ public class Awaiter<T extends SdkTicket, R extends SdkTicket> implements Awaite
 
     @Override
     public void completeWithException(final SdkException sdkException) {
+        this.sendWsInputMessage.suppressSend();
         this.future.completeExceptionally(sdkException);
     }
 
@@ -70,6 +71,6 @@ public class Awaiter<T extends SdkTicket, R extends SdkTicket> implements Awaite
         if (this.future.isDone()) {
             return;
         }
-        this.future.completeExceptionally(new SdkNotConnectedException());
+        completeWithException(new SdkNotConnectedException());
     }
 }
